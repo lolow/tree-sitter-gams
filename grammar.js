@@ -43,6 +43,7 @@ module.exports = grammar({
           prec(9, $.variable_declaration),
           prec(9, $.equation_declaration),
           prec(9, $.equation_definition),
+          prec(9, $.table_declaration),
           prec(9, $.model_declaration),
           prec(9, $.solve_statement),
           prec(9, $.display_statement),
@@ -388,8 +389,25 @@ module.exports = grammar({
 
     equation_relational_op: $ => token(caseInsensitive('=e=|=l=|=g=|=n=|=x=|=c=|=b=')),
 
-    // tables
-    
+    // Table declaration. The 2D data layout (column header + rows) is
+    // captured as one opaque `table_body` token through the next `;`.
+    // This keeps the table block visually distinct for highlighting
+    // without modelling row/column semantics in the syntax tree.
+    table_keyword: $ => prec(9, choice(
+      token.immediate(caseInsensitive('table')),
+      token.immediate(caseInsensitive('tables'))
+    )),
+
+    table_declaration: $ => seq(
+      $.table_keyword,
+      field('name', choice($.identifier_with_domain, $.identifier)),
+      optional(field('description', $.string)),
+      optional(field('data', $.table_body))
+    ),
+
+    table_body: $ => token(prec(-1, /[^;]+/)),
+
+
 
     // models declaration
 
