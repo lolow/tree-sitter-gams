@@ -1,0 +1,34 @@
+{
+  "grammars": [
+    {
+      "name": "gams",
+      "camelcase": "Gams",
+      "scope": "source.gams",
+      "path": ".",
+      "file-types": ["gms", "inc"],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^gams$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "Apache-2.0",
+    "description": "Tree-sitter grammar for the GAMS modeling language (fork)",
+    "authors": [
+      { "name": "Nicolas Schlegel" }
+    ],
+    "links": {
+      "repository": "https://github.com/Schlegen/tree-sitter-gams"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "kotlin": false,
+    "zig": false
+  }
+}
