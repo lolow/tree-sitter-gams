@@ -1,0 +1,13 @@
+tree-sitter-gams (fork)
+=======================
+
+This is a fork of:
+
+    https://github.com/Schlegen/tree-sitter-gams
+    Apache License 2.0
+    Upstream commit pinned: 78dd717bd95e62a5a2c62446b427a930bc065df4 (2025-12-29)
+
+The original LICENSE file is preserved as required by the Apache-2.0 terms.
+This fork extends the upstream grammar with additional GAMS language features
+required by the gams-zed Zed editor extension; see CHANGES.md (added in this
+fork) for the divergence list.
