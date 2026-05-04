@@ -13,12 +13,16 @@ module.exports = grammar({
     $.line_comment,
     $.block_comment_c,
     $.block_comment_dollar,
+    $.dollar_directive,
   ],
 
   word: $ => $.identifier,
 
   rules: {
-    source_file: $ => repeat($.statement),
+    source_file: $ => repeat(choice(
+      $.statement,
+      $.dollar_directive,
+    )),
 
     statement: $ => prec(30,
       seq(
@@ -136,6 +140,15 @@ module.exports = grammar({
       ),
       
     number: $ => /[+-]?(?:\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/,
+
+    // Compile-time macro reference. Two forms:
+    //   %name%  — named macro (e.g. %scenario%)
+    //   %1, %2  — positional macro arg passed to $batinclude
+    // Strings can contain the same token; see `string` for re-entry.
+    macro_ref: $ => token(choice(
+      /%[A-Za-z_][A-Za-z_0-9]*%/,
+      /%[0-9]+/
+    )),
 
     bool: $ => choice('yes', 'no'),
 
@@ -425,7 +438,7 @@ module.exports = grammar({
 
     // Expressions
 
-    expression: $ => 
+    expression: $ =>
       prec(3,
         choice(
           prec.left(5, $.unary_builtin_function_expr),
@@ -434,6 +447,7 @@ module.exports = grammar({
           prec.left(2, $.number),
           prec.left(2, $.bool),
           prec.left(2, $.string),
+          prec.left(2, $.macro_ref),
           prec.left(2, $.unary_expr),
           prec.left(2, $.indexed_reference),
           prec.left(2, $.paren_expr),
