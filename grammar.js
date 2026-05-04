@@ -31,7 +31,7 @@ module.exports = grammar({
       )
     ),
 
-    statement_without_semicolon: $ => 
+    statement_without_semicolon: $ =>
       prec(25,
         choice(
           prec(20, $.loop_statement),
@@ -42,10 +42,11 @@ module.exports = grammar({
           prec(9, $.scalar_declaration),
           prec(9, $.variable_declaration),
           prec(9, $.equation_declaration),
+          prec(9, $.equation_definition),
           prec(9, $.model_declaration),
           prec(9, $.solve_statement),
           prec(9, $.display_statement),
-      
+
           $.alias_declaration,
           prec(1, $.assignment_statement)
         )
@@ -367,6 +368,25 @@ module.exports = grammar({
       $.variable_attribute_keyword,
       field('value', $.number)
     ),
+
+    // Equation definition: name[(domain)][$cond] .. lhs =E= rhs
+    //
+    // GAMS relational operators (case-insensitive):
+    //   =e= equality   =l= less-or-equal   =g= greater-or-equal
+    //   =n= no relation (variational)
+    //   =x= external function   =c= cone (MCP)   =b= boolean
+    equation_definition: $ => prec(9, seq(
+      field('name', choice($.identifier, $.identifier_with_domain)),
+      optional(seq('$', field('condition', $.expression))),
+      $.equation_definition_op,
+      field('lhs', $.expression),
+      $.equation_relational_op,
+      field('rhs', $.expression)
+    )),
+
+    equation_definition_op: $ => '..',
+
+    equation_relational_op: $ => token(caseInsensitive('=e=|=l=|=g=|=n=|=x=|=c=|=b=')),
 
     // tables
     
@@ -699,9 +719,13 @@ module.exports = grammar({
       )
     )
   },
-  // conflicts: $ => [
-    // [$.identifier_with_domain_args, $.indexed_reference_args]
-  // ]
+  conflicts: $ => [
+    // `name(arg, arg)` is ambiguous between a set/parameter/equation
+    // declaration domain (bare identifiers only) and an indexed expression
+    // reference (full index_element). The parser commits once a non-bare
+    // index appears or `..` follows.
+    [$.identifier_with_domain_args, $.index_element],
+  ],
 });
 
 // separate one or more term by comma or newline
