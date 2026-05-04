@@ -1,4 +1,4 @@
-# Scalars_declaration
+* Scalars_declaration
 
 Scalar
     rho  "discount rate"                           / .15 /

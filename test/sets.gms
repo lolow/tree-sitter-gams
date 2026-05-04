@@ -1,4 +1,4 @@
-# Set declaration
+* Set declaration
 set i;
 
 Set i /i1, i2, i3/;

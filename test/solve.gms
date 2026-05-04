@@ -10,5 +10,5 @@ Solve nortonl using nlp maximizing z;
 Solve nortonn using nlp maximizing z;
 Solve nortone using nlp maximizing z;
 
-# not supported
-# solve m min z use nlp;
+* not supported
+* solve m min z use nlp;

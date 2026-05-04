@@ -1,4 +1,4 @@
-# Variable declaration
+* Variable declaration
 
 Variables
    k(t)      'capital stock (trillion rupees)'
@@ -42,10 +42,10 @@ Positive Variables
 Variable x1(j) "my first"  / j1.up 10 , j1.Lo 5, j1.l 7, j1.m 0, j1.scale 20 /;
 Variable x1(j) "my first"  / j1.UP 10 , j1.LO 5, j1.L 7, j1.M 0, j1.SCALE 20 /;
 
-# Not handled for now
-# Variable Table x(i,j) "initial values"
-#                             l      m
-#     seattle.  new-york      50
-#     seattle.  chicago      300
-#     san-diego.new-york     275
-#     san-diego.chicago           0.009;
+* Not handled for now
+* Variable Table x(i,j) "initial values"
+*                             l      m
+*     seattle.  new-york      50
+*     seattle.  chicago      300
+*     san-diego.new-york     275
+*     san-diego.chicago           0.009;

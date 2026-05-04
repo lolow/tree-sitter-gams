@@ -1,4 +1,4 @@
-#loops
+*loops
 
 loop(i$(curacc > reltol),
        value(i+1) =  0.5*(value(i) + target / value(i));
