@@ -2,19 +2,23 @@ module.exports = grammar({
   name: 'gams',
 
   extras: $ => [
-    /\s/,
-    $.comment
+    /[ \t\r]/,
+    $.line_comment,
+    $.block_comment_c,
+    $.block_comment_dollar,
+    /\n/,
+  ],
+
+  externals: $ => [
+    $.line_comment,
+    $.block_comment_c,
+    $.block_comment_dollar,
   ],
 
   word: $ => $.identifier,
 
   rules: {
-    source_file: $ => repeat(
-      choice(
-        $.statement,
-        $.comment
-      )
-    ),
+    source_file: $ => repeat($.statement),
 
     statement: $ => prec(30,
       seq(
@@ -135,7 +139,13 @@ module.exports = grammar({
 
     bool: $ => choice('yes', 'no'),
 
-    comment: $ => token(seq('#', /.*/)),
+    // GAMS comments handled by the external scanner in src/scanner.c.
+    // Three forms, all of which the scanner skips leading whitespace
+    // before recognising:
+    //   line_comment        — '*' in column 0 through end of line
+    //   block_comment_c     — /* ... */ (no nesting)
+    //   block_comment_dollar — $ontext ... $offtext (case-insensitive,
+    //                          both leading-$ at column 0 and inline $$)
 
     string: $ => choice(
       seq('"', repeat(/[^"]/), '"'),

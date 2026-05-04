@@ -1,4 +1,7 @@
-src/*
+src/parser.c
+src/grammar.json
+src/node-types.json
+src/tree_sitter/
 Gams.tmLanguage
 output.txt
 node_modules/
