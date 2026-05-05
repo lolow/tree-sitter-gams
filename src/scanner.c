@@ -38,7 +38,7 @@ typedef enum {
   T_BLOCK_COMMENT_C = 1,
   T_BLOCK_COMMENT_DOLLAR = 2,
   T_DOLLAR_DIRECTIVE_KEYWORD = 3,
-  T_DOLLAR_DIRECTIVE_ARGS = 4,
+  T_DOLLAR_DIRECTIVE_END = 4,
 } TokenType;
 
 // Stateless scanner: no information needs to round-trip across edits.
@@ -86,25 +86,35 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
       !valid_symbols[T_BLOCK_COMMENT_C] &&
       !valid_symbols[T_BLOCK_COMMENT_DOLLAR] &&
       !valid_symbols[T_DOLLAR_DIRECTIVE_KEYWORD] &&
-      !valid_symbols[T_DOLLAR_DIRECTIVE_ARGS]) {
+      !valid_symbols[T_DOLLAR_DIRECTIVE_END]) {
     return false;
   }
 
-  // ---- (priority 1) directive arguments ---------------------------------
-  // The parser admits this external only right after a
-  // dollar_directive_keyword, so seeing it in valid_symbols is a reliable
-  // signal that we should consume the rest of the directive's line.
-  // The grammar has \n in `extras`, so by the time scan() runs the lexer
-  // may already have crossed a newline. get_column == 0 means we are at
-  // the start of a new line and the directive had no args.
-  if (valid_symbols[T_DOLLAR_DIRECTIVE_ARGS] &&
-      lexer->get_column(lexer) > 0 &&
-      lexer->lookahead != 0 && lexer->lookahead != '\n') {
-    while (lexer->lookahead != 0 && lexer->lookahead != '\n') {
-      lexer->advance(lexer, false);
+  // ---- (priority 1) directive end-of-line marker ---------------------
+  // The parser admits this external only inside a dollar_directive's
+  // body, so when it appears in valid_symbols we know we are expected
+  // to terminate the current directive. Consume one newline if present
+  // so the parser advances past it; at EOF emit a zero-width token so
+  // the directive still closes cleanly.
+  if (valid_symbols[T_DOLLAR_DIRECTIVE_END]) {
+    // Skip horizontal whitespace before the newline so trailing spaces
+    // don't keep the parser inside the directive.
+    while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
+           lexer->lookahead == '\r') {
+      lexer->advance(lexer, true);
     }
-    lexer->result_symbol = T_DOLLAR_DIRECTIVE_ARGS;
-    return true;
+    if (lexer->lookahead == '\n') {
+      lexer->advance(lexer, false);
+      lexer->result_symbol = T_DOLLAR_DIRECTIVE_END;
+      return true;
+    }
+    if (lexer->lookahead == 0) {
+      lexer->result_symbol = T_DOLLAR_DIRECTIVE_END;
+      return true;
+    }
+    // Inside a directive but not at EOL — fall through so other arg
+    // tokens (string, macro_ref, _directive_text, chained keyword)
+    // get their chance.
   }
 
   skip_whitespace(lexer);
@@ -181,6 +191,17 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
     if (n == 0) return false;
 
     int is_ontext = (n == 6 && memcmp(name, "ontext", 6) == 0);
+
+    // GAMS supports a `.label` suffix on certain control directives
+    // (e.g. `$ifthen.cb`, `$endif.cb`) so multiple control blocks can
+    // be paired by name. Include the suffix as part of the keyword
+    // token so the whole `$ifthen.cb` highlights uniformly.
+    if (!is_ontext && lexer->lookahead == '.') {
+      lexer->advance(lexer, false);
+      while (is_id_continue(lexer->lookahead)) {
+        lexer->advance(lexer, false);
+      }
+    }
 
     // ---- block_comment_dollar: scan to matching $offtext --------------
     if (is_ontext && valid_symbols[T_BLOCK_COMMENT_DOLLAR]) {

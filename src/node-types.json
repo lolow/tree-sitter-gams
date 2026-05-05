@@ -291,11 +291,19 @@
       "required": true,
       "types": [
         {
-          "type": "dollar_directive_args",
+          "type": "dollar_directive_end",
           "named": true
         },
         {
           "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "string",
           "named": true
         }
       ]
@@ -1767,7 +1775,7 @@
     "named": true
   },
   {
-    "type": "dollar_directive_args",
+    "type": "dollar_directive_end",
     "named": true
   },
   {

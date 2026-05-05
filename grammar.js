@@ -14,7 +14,7 @@ module.exports = grammar({
     $.block_comment_c,
     $.block_comment_dollar,
     $.dollar_directive_keyword,
-    $.dollar_directive_args,
+    $.dollar_directive_end,
   ],
 
   word: $ => $.identifier,
@@ -25,14 +25,29 @@ module.exports = grammar({
       $.dollar_directive,
     )),
 
-    // A GAMS dollar directive: $name [args ...] through end of line, or
-    // $$name [args ...] inline. The scanner emits the keyword and args
-    // as two separate tokens so highlighting can colour the keyword
-    // distinctly from the (heterogeneous, free-form) argument text.
+    // A GAMS dollar directive: $name[.label] [args ...] through end of
+    // line, or $$name [args ...] inline. The scanner emits the
+    // keyword token, the parser tokenises the args using the regular
+    // grammar (strings, macros, plain text), and a final
+    // dollar_directive_end (newline) closes the directive. This lets
+    // highlights colour quoted strings, %macro% references, and
+    // chained directives within the args while leaving plain words
+    // (option names, label suffixes, comparison ops) unstyled.
     dollar_directive: $ => seq(
       $.dollar_directive_keyword,
-      optional($.dollar_directive_args)
+      repeat(choice(
+        $.string,
+        $.macro_ref,
+        $.dollar_directive_keyword,  // chained directive on same line
+        $._directive_text,
+      )),
+      $.dollar_directive_end
     ),
+
+    // Catch-all run of non-special chars inside directive args. Lower
+    // priority than the regular tokens so identifiers, numbers, and
+    // macros get matched first when applicable.
+    _directive_text: $ => token(prec(-2, /[^\s'"%$]+/)),
 
     statement: $ => prec(30,
       seq(
