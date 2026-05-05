@@ -47,6 +47,9 @@ module.exports = grammar({
           prec(9, $.model_declaration),
           prec(9, $.solve_statement),
           prec(9, $.display_statement),
+          prec(9, $.option_statement),
+          prec(9, $.abort_statement),
+          prec(9, $.acronym_declaration),
 
           $.alias_declaration,
           prec(1, $.assignment_statement)
@@ -131,14 +134,28 @@ module.exports = grammar({
           $.number
         ),
 
-    variable_attribute_keyword: $ => 
+    // Variable / equation suffix attributes accessed via dotted reference
+    // (e.g. x.l, eq.range). Variable suffixes (l/lo/up/fx/m/scale/prior/
+    // stage) and equation suffixes (range/slack/slacklo/slackup/infeas)
+    // share the same lexer token because both attach to identifiers via
+    // an immediate `.`.
+    variable_attribute_keyword: $ =>
       choice(
+        // variable level/bounds/dual/scale
         token.immediate(caseInsensitive('up')),
         token.immediate(caseInsensitive('lo')),
         token.immediate(caseInsensitive('l')),
         token.immediate(caseInsensitive('fx')),
         token.immediate(caseInsensitive('scale')),
+        token.immediate(caseInsensitive('prior')),
+        token.immediate(caseInsensitive('stage')),
         token.immediate(caseInsensitive('m')),
+        // equation slack / range / infeasibility
+        token.immediate(caseInsensitive('range')),
+        token.immediate(caseInsensitive('slacklo')),
+        token.immediate(caseInsensitive('slackup')),
+        token.immediate(caseInsensitive('slack')),
+        token.immediate(caseInsensitive('infeas')),
       ),
       
     number: $ => /[+-]?(?:\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/,
@@ -488,6 +505,37 @@ module.exports = grammar({
     display_statement: $ => prec(9, seq($.display_keyword, commaSep1($.display_item))),
 
     display_item: $ => choice( $.string, $.expression),
+
+    // option <name> = <value> [, <name> = <value>] ...
+    // Per GAMS, option names are not reserved — they're just identifiers.
+    option_statement: $ => prec(9, seq(
+      token.immediate(caseInsensitive('option')),
+      commaSep1($.option_assignment)
+    )),
+
+    option_assignment: $ => seq(
+      field('name', $.identifier),
+      '=',
+      field('value', choice($.number, $.bool, $.identifier, $.string))
+    ),
+
+    // abort [.noError] [<expression> | <string>] ...
+    abort_statement: $ => prec(9, seq(
+      token.immediate(caseInsensitive('abort')),
+      optional(seq(token.immediate('.'), token.immediate(caseInsensitive('noError')))),
+      commaSep1($.display_item)
+    )),
+
+    // acronym <name> [, <name>] ...
+    acronym_keyword: $ => prec(9, choice(
+      token.immediate(caseInsensitive('acronym')),
+      token.immediate(caseInsensitive('acronyms'))
+    )),
+
+    acronym_declaration: $ => seq(
+      $.acronym_keyword,
+      commaSep1($.identifier)
+    ),
 
     // Expressions
 
