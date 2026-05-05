@@ -283,6 +283,25 @@
     }
   },
   {
+    "type": "dollar_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive_args",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "element_block",
     "named": true,
     "fields": {},
@@ -1748,7 +1767,11 @@
     "named": true
   },
   {
-    "type": "dollar_directive",
+    "type": "dollar_directive_args",
+    "named": true
+  },
+  {
+    "type": "dollar_directive_keyword",
     "named": true
   },
   {

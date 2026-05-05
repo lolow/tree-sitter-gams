@@ -19,6 +19,27 @@
         ]
       }
     },
+    "dollar_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "dollar_directive_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "dollar_directive_args"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
     "statement": {
       "type": "PREC",
       "value": 30,
@@ -3627,7 +3648,11 @@
     },
     {
       "type": "SYMBOL",
-      "name": "dollar_directive"
+      "name": "dollar_directive_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "dollar_directive_args"
     }
   ],
   "inline": [],

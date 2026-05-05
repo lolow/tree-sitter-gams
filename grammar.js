@@ -13,7 +13,8 @@ module.exports = grammar({
     $.line_comment,
     $.block_comment_c,
     $.block_comment_dollar,
-    $.dollar_directive,
+    $.dollar_directive_keyword,
+    $.dollar_directive_args,
   ],
 
   word: $ => $.identifier,
@@ -23,6 +24,15 @@ module.exports = grammar({
       $.statement,
       $.dollar_directive,
     )),
+
+    // A GAMS dollar directive: $name [args ...] through end of line, or
+    // $$name [args ...] inline. The scanner emits the keyword and args
+    // as two separate tokens so highlighting can colour the keyword
+    // distinctly from the (heterogeneous, free-form) argument text.
+    dollar_directive: $ => seq(
+      $.dollar_directive_keyword,
+      optional($.dollar_directive_args)
+    ),
 
     statement: $ => prec(30,
       seq(
