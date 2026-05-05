@@ -15,26 +15,54 @@ module.exports = grammar({
     $.block_comment_dollar,
     $.dollar_directive_keyword,
     $.dollar_directive_end,
+    $.ifthen_keyword,
+    $.elseif_keyword,
+    $.else_keyword,
+    $.endif_keyword,
+    $.onecho_keyword,
+    $.offecho_keyword,
+    $.onput_keyword,
+    $.offput_keyword,
+    $.onembedded_keyword,
+    $.offembedded_keyword,
+    $.embedded_body,
+    $.echo_body,
+    $.put_body,
   ],
 
   word: $ => $.identifier,
 
   rules: {
-    source_file: $ => repeat(choice(
+    source_file: $ => repeat($._top_level_item),
+
+    _top_level_item: $ => choice(
       $.statement,
       $.dollar_directive,
-    )),
+      $.ifthen_block,
+      $.onecho_block,
+      $.onput_block,
+      $.onembedded_block,
+    ),
 
     // A GAMS dollar directive: $name[.label] [args ...] through end of
     // line, or $$name [args ...] inline. The scanner emits the
-    // keyword token, the parser tokenises the args using the regular
-    // grammar (strings, macros, plain text), and a final
-    // dollar_directive_end (newline) closes the directive. This lets
-    // highlights colour quoted strings, %macro% references, and
-    // chained directives within the args while leaving plain words
-    // (option names, label suffixes, comparison ops) unstyled.
+    // keyword token without the .label suffix; the label is a
+    // separate token.immediate so #eq?/#not-eq? predicates in
+    // highlights.scm can compare the labels of paired open/close
+    // directives.
     dollar_directive: $ => seq(
       $.dollar_directive_keyword,
+      optional($.directive_label),
+      $._directive_args
+    ),
+
+    // Args repeat shared by every directive form. Args are normal
+    // GAMS tokens (strings, macros, chained directive keywords) plus
+    // a low-priority directive_text catch-all for plain words —
+    // option names, label suffixes, comparison operators. Terminated
+    // by dollar_directive_end (the scanner emits this at \n or EOF
+    // when valid_symbols admits it).
+    _directive_args: $ => seq(
       repeat(choice(
         $.string,
         $.macro_ref,
@@ -44,13 +72,102 @@ module.exports = grammar({
       $.dollar_directive_end
     ),
 
+    // The optional `.label` suffix on a directive keyword (e.g.
+    // `$ifthen.cb`, `$endif.cb`). token.immediate ensures the dot
+    // attaches directly to the preceding keyword with no whitespace.
+    directive_label: $ => token.immediate(/\.[A-Za-z_][A-Za-z_0-9]*/),
+
     // A whitespace-separated run of non-special chars inside directive
     // args. Each `not`, `set`, `exist`, `==`, etc. becomes its own
     // node; highlights.scm uses a `#match?` predicate to colour the
     // GAMS-defined test words (see `$if` / `$ifThen` reference) as
-    // keywords. Lower priority than the regular grammar tokens so
-    // strings, numbers, macros, and chained directives match first.
+    // keywords.
     directive_text: $ => token(prec(-2, /[^\s'"%$]+/)),
+
+    // ---- $ifthen ... [$elseIf ...]* [$else ...]? $endif ----------
+    // Strict label matching is enforced via a #not-eq? query in
+    // highlights.scm — mismatched labels render with the @invalid
+    // scope. The grammar shape itself does not enforce label equality
+    // (tree-sitter LR cannot do semantic equality at parse time);
+    // structural pairing — unclosed $ifthen, orphan $endif — IS
+    // enforced and surfaces as ERROR nodes.
+    ifthen_block: $ => seq(
+      $.ifthen_directive,
+      repeat($._top_level_item),
+      repeat($.elseif_clause),
+      optional($.else_clause),
+      $.endif_directive
+    ),
+
+    ifthen_directive: $ => seq(
+      $.ifthen_keyword,
+      optional($.directive_label),
+      $._directive_args
+    ),
+
+    elseif_clause: $ => seq(
+      $.elseif_directive,
+      repeat($._top_level_item)
+    ),
+
+    elseif_directive: $ => seq(
+      $.elseif_keyword,
+      optional($.directive_label),
+      $._directive_args
+    ),
+
+    else_clause: $ => seq(
+      $.else_directive,
+      repeat($._top_level_item)
+    ),
+
+    else_directive: $ => seq(
+      $.else_keyword,
+      optional($.directive_label),
+      $._directive_args
+    ),
+
+    endif_directive: $ => seq(
+      $.endif_keyword,
+      optional($.directive_label),
+      $._directive_args
+    ),
+
+    // ---- $onEcho / $offEcho ---------------------------------------
+    // Body is plain text (echoed verbatim to an external file).
+    // The scanner emits the body as one opaque echo_body token so
+    // tree-sitter's main lexer doesn't try to interpret it.
+    onecho_block: $ => seq(
+      $.onecho_directive,
+      optional($.echo_body),
+      $.offecho_directive
+    ),
+    onecho_directive:  $ => seq($.onecho_keyword,  $._directive_args),
+    offecho_directive: $ => seq($.offecho_keyword, $._directive_args),
+
+    // ---- $onPut / $offPut -----------------------------------------
+    // Body is freeform text written to a put file via a similar
+    // mechanism to $onEcho. Same opaque-body treatment.
+    onput_block: $ => seq(
+      $.onput_directive,
+      optional($.put_body),
+      $.offput_directive
+    ),
+    onput_directive:  $ => seq($.onput_keyword,  $._directive_args),
+    offput_directive: $ => seq($.offput_keyword, $._directive_args),
+
+    // ---- $onEmbeddedCode <lang>: ... $offEmbeddedCode -------------
+    // The body is opaque to the GAMS parser — it's typically Python
+    // (or Connect, or another foreign language). The scanner emits
+    // it as a single embedded_body token; injection.scm re-parses
+    // the body with a chosen sub-grammar.
+    onembedded_block: $ => seq(
+      $.onembedded_directive,
+      optional($.embedded_body),
+      $.offembedded_directive
+    ),
+    onembedded_directive:  $ => seq($.onembedded_keyword,  $._directive_args),
+    offembedded_directive: $ => seq($.offembedded_keyword, $._directive_args),
 
     statement: $ => prec(30,
       seq(

@@ -6,18 +6,38 @@
     "source_file": {
       "type": "REPEAT",
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "statement"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "dollar_directive"
-          }
-        ]
+        "type": "SYMBOL",
+        "name": "_top_level_item"
       }
+    },
+    "_top_level_item": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "dollar_directive"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ifthen_block"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "onecho_block"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "onput_block"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "onembedded_block"
+        }
+      ]
     },
     "dollar_directive": {
       "type": "SEQ",
@@ -26,6 +46,27 @@
           "type": "SYMBOL",
           "name": "dollar_directive_keyword"
         },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_label"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "_directive_args": {
+      "type": "SEQ",
+      "members": [
         {
           "type": "REPEAT",
           "content": {
@@ -56,6 +97,13 @@
         }
       ]
     },
+    "directive_label": {
+      "type": "IMMEDIATE_TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\.[A-Za-z_][A-Za-z_0-9]*"
+      }
+    },
     "directive_text": {
       "type": "TOKEN",
       "content": {
@@ -66,6 +114,330 @@
           "value": "[^\\s'\"%$]+"
         }
       }
+    },
+    "ifthen_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "ifthen_directive"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_top_level_item"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "elseif_clause"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "else_clause"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "endif_directive"
+        }
+      ]
+    },
+    "ifthen_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "ifthen_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_label"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "elseif_clause": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "elseif_directive"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_top_level_item"
+          }
+        }
+      ]
+    },
+    "elseif_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "elseif_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_label"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "else_clause": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "else_directive"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_top_level_item"
+          }
+        }
+      ]
+    },
+    "else_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "else_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_label"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "endif_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "endif_keyword"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "directive_label"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "onecho_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onecho_directive"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "echo_body"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "offecho_directive"
+        }
+      ]
+    },
+    "onecho_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onecho_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "offecho_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "offecho_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "onput_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onput_directive"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "put_body"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "offput_directive"
+        }
+      ]
+    },
+    "onput_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onput_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "offput_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "offput_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "onembedded_block": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onembedded_directive"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "embedded_body"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "offembedded_directive"
+        }
+      ]
+    },
+    "onembedded_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "onembedded_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
+    },
+    "offembedded_directive": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "offembedded_keyword"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_directive_args"
+        }
+      ]
     },
     "statement": {
       "type": "PREC",
@@ -3708,6 +4080,58 @@
     {
       "type": "SYMBOL",
       "name": "dollar_directive_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ifthen_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "elseif_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "else_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "endif_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "onecho_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "offecho_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "onput_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "offput_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "onembedded_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "offembedded_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "embedded_body"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "echo_body"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "put_body"
     }
   ],
   "inline": [],

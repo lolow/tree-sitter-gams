@@ -291,6 +291,10 @@
       "required": true,
       "types": [
         {
+          "type": "directive_label",
+          "named": true
+        },
+        {
           "type": "directive_text",
           "named": true
         },
@@ -350,6 +354,201 @@
         },
         {
           "type": "set_element",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "else_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_block",
+          "named": true
+        },
+        {
+          "type": "onecho_block",
+          "named": true
+        },
+        {
+          "type": "onembedded_block",
+          "named": true
+        },
+        {
+          "type": "onput_block",
+          "named": true
+        },
+        {
+          "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "else_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_label",
+          "named": true
+        },
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "else_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "elseif_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_block",
+          "named": true
+        },
+        {
+          "type": "onecho_block",
+          "named": true
+        },
+        {
+          "type": "onembedded_block",
+          "named": true
+        },
+        {
+          "type": "onput_block",
+          "named": true
+        },
+        {
+          "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "elseif_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_label",
+          "named": true
+        },
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "elseif_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "endif_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_label",
+          "named": true
+        },
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "endif_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
           "named": true
         },
         {
@@ -693,6 +892,96 @@
     }
   },
   {
+    "type": "ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_clause",
+          "named": true
+        },
+        {
+          "type": "elseif_clause",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_block",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "onecho_block",
+          "named": true
+        },
+        {
+          "type": "onembedded_block",
+          "named": true
+        },
+        {
+          "type": "onput_block",
+          "named": true
+        },
+        {
+          "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "ifthen_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_label",
+          "named": true
+        },
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "ifthen_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "index_atom",
     "named": true,
     "fields": {},
@@ -950,6 +1239,285 @@
     "type": "multi_args_builtin_function_keyword",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "offecho_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "offecho_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "offembedded_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "offembedded_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "offput_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "offput_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onecho_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "echo_body",
+          "named": true
+        },
+        {
+          "type": "offecho_directive",
+          "named": true
+        },
+        {
+          "type": "onecho_directive",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onecho_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "onecho_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onembedded_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "embedded_body",
+          "named": true
+        },
+        {
+          "type": "offembedded_directive",
+          "named": true
+        },
+        {
+          "type": "onembedded_directive",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onembedded_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "onembedded_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onput_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "offput_directive",
+          "named": true
+        },
+        {
+          "type": "onput_directive",
+          "named": true
+        },
+        {
+          "type": "put_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "onput_directive",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "directive_text",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_end",
+          "named": true
+        },
+        {
+          "type": "dollar_directive_keyword",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        },
+        {
+          "type": "onput_keyword",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "option_assignment",
@@ -1336,6 +1904,22 @@
       "types": [
         {
           "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_block",
+          "named": true
+        },
+        {
+          "type": "onecho_block",
+          "named": true
+        },
+        {
+          "type": "onembedded_block",
+          "named": true
+        },
+        {
+          "type": "onput_block",
           "named": true
         },
         {
@@ -1775,6 +2359,10 @@
     "named": false
   },
   {
+    "type": "directive_label",
+    "named": true
+  },
+  {
     "type": "directive_text",
     "named": true
   },
@@ -1791,12 +2379,32 @@
     "named": true
   },
   {
+    "type": "echo_body",
+    "named": true
+  },
+  {
     "type": "else",
     "named": false
   },
   {
+    "type": "else_keyword",
+    "named": true
+  },
+  {
     "type": "elseif",
     "named": false
+  },
+  {
+    "type": "elseif_keyword",
+    "named": true
+  },
+  {
+    "type": "embedded_body",
+    "named": true
+  },
+  {
+    "type": "endif_keyword",
+    "named": true
   },
   {
     "type": "equation_definition_op",
@@ -1825,6 +2433,10 @@
   {
     "type": "if",
     "named": false
+  },
+  {
+    "type": "ifthen_keyword",
+    "named": true
   },
   {
     "type": "line_comment",
@@ -1868,6 +2480,30 @@
     "named": true
   },
   {
+    "type": "offecho_keyword",
+    "named": true
+  },
+  {
+    "type": "offembedded_keyword",
+    "named": true
+  },
+  {
+    "type": "offput_keyword",
+    "named": true
+  },
+  {
+    "type": "onecho_keyword",
+    "named": true
+  },
+  {
+    "type": "onembedded_keyword",
+    "named": true
+  },
+  {
+    "type": "onput_keyword",
+    "named": true
+  },
+  {
     "type": "ord",
     "named": false
   },
@@ -1878,6 +2514,10 @@
   {
     "type": "prod",
     "named": false
+  },
+  {
+    "type": "put_body",
+    "named": true
   },
   {
     "type": "round",
