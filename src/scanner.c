@@ -19,9 +19,16 @@
 // `externals` array in grammar.js exactly.
 
 #include "tree_sitter/parser.h"
-#include <ctype.h>
 #include <stddef.h>
 #include <string.h>
+
+// Inline ASCII tolower — Zed compiles the grammar to WebAssembly, which
+// does not provide libc functions (an `<ctype.h>` `tolower` import fails
+// instantiation with "invalid import 'tolower'"). GAMS keywords are
+// 7-bit ASCII so a hand-rolled fold suffices.
+static inline int32_t ascii_tolower(int32_t c) {
+  return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
+}
 
 typedef enum {
   T_LINE_COMMENT = 0,
@@ -46,7 +53,8 @@ void tree_sitter_gams_external_scanner_deserialize(void *p, const char *buf,
 static int match_word_ci(TSLexer *lexer, const char *word) {
   for (const char *p = word; *p; ++p) {
     if (lexer->lookahead == 0) return 0;
-    if (tolower(lexer->lookahead) != tolower((unsigned char)*p)) return 0;
+    if (ascii_tolower(lexer->lookahead) !=
+        ascii_tolower((unsigned char)*p)) return 0;
     lexer->advance(lexer, false);
   }
   return 1;
@@ -126,7 +134,7 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
     int n = 0;
     while (n < 7 && (is_id_start(lexer->lookahead) ||
                      (lexer->lookahead >= '0' && lexer->lookahead <= '9'))) {
-      name[n++] = (char)tolower(lexer->lookahead);
+      name[n++] = (char)ascii_tolower(lexer->lookahead);
       lexer->advance(lexer, false);
     }
     if (n == 0) return false;
