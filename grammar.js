@@ -152,7 +152,10 @@ module.exports = grammar({
       /%[0-9]+/
     )),
 
-    bool: $ => choice('yes', 'no'),
+    // GAMS literal constants. `yes`/`no` are booleans; `inf` (positive
+     // infinity), `na` (not-available), and `eps` (small positive) are
+     // numeric sentinels recognised in expression contexts.
+    bool: $ => token(caseInsensitive('yes|no|inf|na|eps')),
 
     // GAMS comments handled by the external scanner in src/scanner.c.
     // Three forms, all of which the scanner skips leading whitespace
@@ -239,7 +242,7 @@ module.exports = grammar({
     
     scalar_value_block: $ => seq(
       '/',
-      $.number,
+      choice($.number, $.bool),
       '/'
     ),
 
@@ -447,25 +450,37 @@ module.exports = grammar({
     solve_statement: $ => prec(9,
       seq(
         $.solve_keyword,
-        $.identifier, // model_name
+        field('model', $.identifier),
         choice(
-          // using ... maximizing ...
+          // using <type> [<direction> <objective>]
+          // direction+objective absent for MCP/CNS/EMP solves.
           seq(
             token.immediate(caseInsensitive('using')),
-            $.identifier,
-            $.solve_direction,
-            $.identifier // var_name
+            field('model_type', choice($.model_type, $.identifier)),
+            optional(seq(
+              $.solve_direction,
+              field('objective', $.identifier)
+            ))
           ),
-          // maximizing ... using ...
+          // <direction> <objective> using <type>
           seq(
             $.solve_direction,
-            $.identifier,                 // var_name
+            field('objective', $.identifier),
             token.immediate(caseInsensitive('using')),
-            $.identifier
+            field('model_type', choice($.model_type, $.identifier))
           )
         )
       )
     ),
+
+    // Recognised GAMS solver model types (case-insensitive). Wrapped in
+    // a `prec` so the model_type token wins the lexer tie-break against
+    // `identifier` for inputs like `lp` / `nlp` / `mip`. The choice in
+    // solve_statement still falls back to plain identifier so a user-
+    // defined or future model type parses cleanly.
+    model_type: $ => token(prec(1, caseInsensitive(
+      'lp|nlp|mip|rmip|minlp|rminlp|qcp|miqcp|rmiqcp|mcp|mpec|rmpec|dnlp|cns|emp'
+    ))),
 
     // Display statement
     display_keyword: $ => token.immediate(caseInsensitive('display')),
