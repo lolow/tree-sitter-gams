@@ -39,15 +39,18 @@ module.exports = grammar({
         $.string,
         $.macro_ref,
         $.dollar_directive_keyword,  // chained directive on same line
-        $._directive_text,
+        $.directive_text,
       )),
       $.dollar_directive_end
     ),
 
-    // Catch-all run of non-special chars inside directive args. Lower
-    // priority than the regular tokens so identifiers, numbers, and
-    // macros get matched first when applicable.
-    _directive_text: $ => token(prec(-2, /[^\s'"%$]+/)),
+    // A whitespace-separated run of non-special chars inside directive
+    // args. Each `not`, `set`, `exist`, `==`, etc. becomes its own
+    // node; highlights.scm uses a `#match?` predicate to colour the
+    // GAMS-defined test words (see `$if` / `$ifThen` reference) as
+    // keywords. Lower priority than the regular grammar tokens so
+    // strings, numbers, macros, and chained directives match first.
+    directive_text: $ => token(prec(-2, /[^\s'"%$]+/)),
 
     statement: $ => prec(30,
       seq(

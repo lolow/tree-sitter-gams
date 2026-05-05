@@ -21,7 +21,7 @@
 
 enum ts_symbol_identifiers {
   sym_identifier = 1,
-  sym__directive_text = 2,
+  sym_directive_text = 2,
   anon_sym_SEMI = 3,
   sym_set_element = 4,
   anon_sym_LPAREN = 5,
@@ -263,7 +263,7 @@ enum ts_symbol_identifiers {
 static const char * const ts_symbol_names[] = {
   [ts_builtin_sym_end] = "end",
   [sym_identifier] = "identifier",
-  [sym__directive_text] = "_directive_text",
+  [sym_directive_text] = "directive_text",
   [anon_sym_SEMI] = ";",
   [sym_set_element] = "set_element",
   [anon_sym_LPAREN] = "(",
@@ -505,7 +505,7 @@ static const char * const ts_symbol_names[] = {
 static const TSSymbol ts_symbol_map[] = {
   [ts_builtin_sym_end] = ts_builtin_sym_end,
   [sym_identifier] = sym_identifier,
-  [sym__directive_text] = sym__directive_text,
+  [sym_directive_text] = sym_directive_text,
   [anon_sym_SEMI] = anon_sym_SEMI,
   [sym_set_element] = sym_set_element,
   [anon_sym_LPAREN] = anon_sym_LPAREN,
@@ -753,8 +753,8 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [sym__directive_text] = {
-    .visible = false,
+  [sym_directive_text] = {
+    .visible = true,
     .named = true,
   },
   [anon_sym_SEMI] = {
@@ -3152,7 +3152,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       ACCEPT_TOKEN(ts_builtin_sym_end);
       END_STATE();
     case 49:
-      ACCEPT_TOKEN(sym__directive_text);
+      ACCEPT_TOKEN(sym_directive_text);
       if (lookahead == '+' ||
           lookahead == '-') ADVANCE(51);
       if (('0' <= lookahead && lookahead <= '9')) ADVANCE(87);
@@ -3165,7 +3165,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           lookahead != '\'') ADVANCE(52);
       END_STATE();
     case 50:
-      ACCEPT_TOKEN(sym__directive_text);
+      ACCEPT_TOKEN(sym_directive_text);
       if (('0' <= lookahead && lookahead <= '9')) ADVANCE(85);
       if (lookahead != 0 &&
           (lookahead < '\t' || '\r' < lookahead) &&
@@ -3176,7 +3176,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           lookahead != '\'') ADVANCE(52);
       END_STATE();
     case 51:
-      ACCEPT_TOKEN(sym__directive_text);
+      ACCEPT_TOKEN(sym_directive_text);
       if (('0' <= lookahead && lookahead <= '9')) ADVANCE(87);
       if (lookahead != 0 &&
           (lookahead < '\t' || '\r' < lookahead) &&
@@ -3187,7 +3187,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
           lookahead != '\'') ADVANCE(52);
       END_STATE();
     case 52:
-      ACCEPT_TOKEN(sym__directive_text);
+      ACCEPT_TOKEN(sym_directive_text);
       if (lookahead != 0 &&
           (lookahead < '\t' || '\r' < lookahead) &&
           lookahead != ' ' &&
@@ -5737,7 +5737,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
   [STATE(0)] = {
     [ts_builtin_sym_end] = ACTIONS(1),
     [sym_identifier] = ACTIONS(1),
-    [sym__directive_text] = ACTIONS(1),
+    [sym_directive_text] = ACTIONS(1),
     [anon_sym_SEMI] = ACTIONS(1),
     [anon_sym_LPAREN] = ACTIONS(1),
     [anon_sym_COMMA] = ACTIONS(1),
@@ -13982,7 +13982,7 @@ static const uint16_t ts_small_parse_table[] = {
       sym_block_comment_dollar,
     ACTIONS(478), 3,
       sym_dollar_directive_keyword,
-      sym__directive_text,
+      sym_directive_text,
       sym_macro_ref,
   [7269] = 8,
     ACTIONS(210), 1,
@@ -14038,7 +14038,7 @@ static const uint16_t ts_small_parse_table[] = {
       sym_block_comment_dollar,
     ACTIONS(486), 3,
       sym_dollar_directive_keyword,
-      sym__directive_text,
+      sym_directive_text,
       sym_macro_ref,
   [7345] = 8,
     ACTIONS(210), 1,
@@ -14136,7 +14136,7 @@ static const uint16_t ts_small_parse_table[] = {
       sym_block_comment_dollar,
     ACTIONS(494), 3,
       sym_dollar_directive_keyword,
-      sym__directive_text,
+      sym_directive_text,
       sym_macro_ref,
   [7481] = 8,
     ACTIONS(420), 1,
@@ -14517,7 +14517,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(310), 6,
       sym_dollar_directive_keyword,
       sym_dollar_directive_end,
-      sym__directive_text,
+      sym_directive_text,
       sym_macro_ref,
       anon_sym_DQUOTE,
       anon_sym_SQUOTE,
@@ -14562,7 +14562,7 @@ static const uint16_t ts_small_parse_table[] = {
     ACTIONS(318), 6,
       sym_dollar_directive_keyword,
       sym_dollar_directive_end,
-      sym__directive_text,
+      sym_directive_text,
       sym_macro_ref,
       anon_sym_DQUOTE,
       anon_sym_SQUOTE,

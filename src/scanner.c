@@ -175,7 +175,16 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
       double_dollar = 1;
       lexer->advance(lexer, false);
     }
-    if (!double_dollar && col != 0) return false;
+    // Accept the keyword if:
+    //   - $$<name>  (inline form, anywhere)
+    //   - $<name>   at column 0 (top-level directive)
+    //   - $<name>   anywhere when valid_symbols[T_DOLLAR_DIRECTIVE_END]
+    //               is set, i.e. we are inside another directive's args
+    //               and this is a chained directive.
+    if (!double_dollar && col != 0 &&
+        !valid_symbols[T_DOLLAR_DIRECTIVE_END]) {
+      return false;
+    }
 
     // Read the full directive name. We capture the first 6 chars (the
     // length of "ontext") into a small buffer for the block-comment

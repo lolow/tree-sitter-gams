@@ -291,6 +291,10 @@
       "required": true,
       "types": [
         {
+          "type": "directive_text",
+          "named": true
+        },
+        {
           "type": "dollar_directive_end",
           "named": true
         },
@@ -1769,6 +1773,10 @@
   {
     "type": "cosh",
     "named": false
+  },
+  {
+    "type": "directive_text",
+    "named": true
   },
   {
     "type": "display_keyword",

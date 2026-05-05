@@ -45,7 +45,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_directive_text"
+                "name": "directive_text"
               }
             ]
           }
@@ -56,7 +56,7 @@
         }
       ]
     },
-    "_directive_text": {
+    "directive_text": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
