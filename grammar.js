@@ -232,8 +232,14 @@ module.exports = grammar({
     element_entry: $ => seq(
       // Set elements may contain hyphens (e.g. `san-diego`). The lexer
       // prefers `identifier` (the word rule) for hyphen-free names like
-      // `seattle`, so we accept either token here.
+      // `seattle`, so we accept either token here. Multi-dimensional
+      // (tuple) elements use `.` as the separator, e.g. for a 2D set:
+      //   set map(i,j) / a.x, b.y, c.z /;
       choice($.set_element, $.identifier),
+      repeat(seq(
+        token.immediate('.'),
+        choice($.set_element, $.identifier)
+      )),
       optional($.string)
     ),
 
