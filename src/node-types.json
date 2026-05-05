@@ -604,6 +604,41 @@
     }
   },
   {
+    "type": "eq_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "eq_entry",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "eq_entry",
     "named": true,
     "fields": {},
@@ -616,11 +651,11 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "identifier_with_domain",
           "named": true
         },
         {
-          "type": "identifier_with_domain",
+          "type": "name_with_macros",
           "named": true
         },
         {
@@ -638,6 +673,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "eq_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "eq_entry",
           "named": true
@@ -1151,6 +1194,41 @@
     }
   },
   {
+    "type": "model_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "model_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "model_declaration",
     "named": true,
     "fields": {},
@@ -1158,6 +1236,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "model_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "model_entry",
           "named": true
@@ -1239,6 +1325,25 @@
     "type": "multi_args_builtin_function_keyword",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "name_with_macros",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_ref",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "offecho_directive",
@@ -1614,6 +1719,41 @@
     }
   },
   {
+    "type": "param_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "param_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "param_entry",
     "named": true,
     "fields": {},
@@ -1622,11 +1762,11 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "identifier_with_domain",
           "named": true
         },
         {
-          "type": "identifier_with_domain",
+          "type": "name_with_macros",
           "named": true
         },
         {
@@ -1648,6 +1788,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "param_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "param_entry",
           "named": true
@@ -1699,6 +1847,41 @@
     }
   },
   {
+    "type": "scalar_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "scalar_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "scalar_declaration",
     "named": true,
     "fields": {},
@@ -1706,6 +1889,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "scalar_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "scalar_entry",
           "named": true
@@ -1726,7 +1917,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "name_with_macros",
           "named": true
         },
         {
@@ -1765,6 +1956,41 @@
     }
   },
   {
+    "type": "set_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "set_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "set_declaration",
     "named": true,
     "fields": {},
@@ -1772,6 +1998,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "set_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "set_entry",
           "named": true
@@ -1815,11 +2049,11 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "identifier_with_domain",
           "named": true
         },
         {
-          "type": "identifier_with_domain",
+          "type": "name_with_macros",
           "named": true
         },
         {
@@ -2168,6 +2402,41 @@
     }
   },
   {
+    "type": "var_decl_ifthen_block",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "else_directive",
+          "named": true
+        },
+        {
+          "type": "elseif_directive",
+          "named": true
+        },
+        {
+          "type": "endif_directive",
+          "named": true
+        },
+        {
+          "type": "ifthen_directive",
+          "named": true
+        },
+        {
+          "type": "var_entry",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "var_entry",
     "named": true,
     "fields": {},
@@ -2176,11 +2445,11 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "identifier_with_domain",
           "named": true
         },
         {
-          "type": "identifier_with_domain",
+          "type": "name_with_macros",
           "named": true
         },
         {
@@ -2212,6 +2481,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "dollar_directive",
+          "named": true
+        },
+        {
+          "type": "var_decl_ifthen_block",
+          "named": true
+        },
         {
           "type": "var_entry",
           "named": true

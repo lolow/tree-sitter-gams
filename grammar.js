@@ -203,6 +203,23 @@ module.exports = grammar({
 
     // utils
     identifier: $ => /[a-zA-Z_][a-zA-Z0-9_]*/,
+
+    // A symbol name that may have %macro% references embedded in it.
+    // GAMS expands `eqbunkfuel_sea_%clt%` at compile time; for syntax
+    // highlighting we keep the macro segments as separate nodes so
+    // they pick up @constant.macro and the surrounding identifier
+    // chunks render as a normal name. token.immediate enforces no
+    // whitespace between the parts.
+    name_with_macros: $ => prec.right(seq(
+      choice($.identifier, alias($._immediate_macro, $.macro_ref)),
+      repeat(choice(
+        alias($._immediate_id_chunk, $.identifier),
+        alias($._immediate_macro,    $.macro_ref)
+      ))
+    )),
+
+    _immediate_id_chunk: $ => token.immediate(/[A-Za-z_0-9]+/),
+    _immediate_macro:    $ => token.immediate(/%[A-Za-z_][A-Za-z_0-9]*%|%[0-9]+/),
     set_element: $ => /[a-zA-Z_][a-zA-Z0-9_\-]*/,
     set_element_selection: $ => choice(
       $.set_element,
@@ -341,15 +358,32 @@ module.exports = grammar({
 
     set_declaration: $ => prec(10, seq(
       $.set_keyword,
-      commaOrNewlineSep1($.set_entry)
+      commaOrNewlineSep1(choice(
+        $.set_entry,
+        $.dollar_directive,
+        $.set_decl_ifthen_block,
+      ))
       )
     ),
+
+    // $ifthen ... $endif blocks that conditionally include named
+    // entries inside a declaration. Six declaration types each have
+    // their own variant to keep entry-type ambiguity manageable —
+    // a `decl_ifthen_block` for set declarations only contains
+    // set_entry items, etc.
+
+    set_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.set_entry),
+    scalar_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.scalar_entry),
+    param_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.param_entry),
+    var_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.var_entry),
+    eq_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.eq_entry),
+    model_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.model_entry),
 
     set_entry: $ => seq(
       choice(
         $.identifier_with_domain,
-        $.identifier,               // set_name
-      ),                
+        $.name_with_macros,         // set_name (may have %macro% inside)
+      ),
       optional($.string),           // ["text"]
       optional($.element_block)     // [/element [text], .../]
     ),
@@ -401,11 +435,15 @@ module.exports = grammar({
     // scalar declaration
     scalar_declaration: $ => seq(
       $.scalar_keyword,
-      commaOrNewlineSep1($.scalar_entry)
+      commaOrNewlineSep1(choice(
+        $.scalar_entry,
+        $.dollar_directive,
+        $.scalar_decl_ifthen_block,
+      ))
     ),
 
     scalar_entry: $ => seq(
-      $.identifier,                 // scalar_name
+      $.name_with_macros,            // scalar_name (may have %macro%)
       optional($.string),            // ["text"]
       optional($.scalar_value_block) // [/numerical_value/]
     ),
@@ -428,13 +466,17 @@ module.exports = grammar({
     parameter_declaration: $ =>
       seq(
         $.parameter_keyword,
-        commaOrNewlineSep1($.param_entry)
+        commaOrNewlineSep1(choice(
+          $.param_entry,
+          $.dollar_directive,
+          $.param_decl_ifthen_block,
+        ))
       ),
 
     param_entry: $ => seq(
       choice(
         $.identifier_with_domain,    // param_name(index_list)
-        $.identifier               // param_name
+        $.name_with_macros           // param_name (may have %macro%)
       ),
       optional($.string),           // ["text"]
       optional(seq(/\s*\n\s*/, $.param_data_block))           // [/ ... /]
@@ -461,13 +503,17 @@ module.exports = grammar({
     variable_declaration: $ => seq(
       optional($.var_type),
       $.variable_keyword,
-      commaOrNewlineSep1($.var_entry)
+      commaOrNewlineSep1(choice(
+        $.var_entry,
+        $.dollar_directive,
+        $.var_decl_ifthen_block,
+      ))
     ),
 
     var_entry: $ => seq(
       choice(
-        $.identifier,                      // var_name
-        $.identifier_with_domain
+        $.identifier_with_domain,
+        $.name_with_macros                 // var_name (may have %macro%)
       ),
       optional($.string),                // ["text"]
       optional($.var_data_block)         // [/ ... /]
@@ -518,13 +564,17 @@ module.exports = grammar({
 
     equation_declaration: $ => seq(
       $.equation_keyword,
-      commaOrNewlineSep1($.eq_entry)
+      commaOrNewlineSep1(choice(
+        $.eq_entry,
+        $.dollar_directive,
+        $.eq_decl_ifthen_block,
+      ))
     ),
 
     eq_entry: $ => seq(
       choice(
-        $.identifier,                      // eq_name
-        $.identifier_with_domain
+        $.identifier_with_domain,
+        $.name_with_macros                 // eq_name (may have %macro%)
       ),
       optional($.string),                // ["text"]
       optional($.eq_data_block)         // [/ ... /]
@@ -585,8 +635,12 @@ module.exports = grammar({
 
     // models declaration
 
-    model_declaration: $ => seq( $.model_keyword, 
-      commaOrNewlineSep1($.model_entry)
+    model_declaration: $ => seq( $.model_keyword,
+      commaOrNewlineSep1(choice(
+        $.model_entry,
+        $.dollar_directive,
+        $.model_decl_ifthen_block,
+      ))
     ),
 
     model_keyword: $ => prec(9, choice(
@@ -963,15 +1017,40 @@ module.exports = grammar({
   ],
 });
 
-// separate one or more term by comma or newline
+// separate one or more terms by comma or newline; trailing separator
+// is allowed so a ; on its own line after the last entry parses
+// (`equations\n  eq1\n  eq2\n;` is a common multi-line idiom).
 function commaOrNewlineSep1(rule) {
   return seq(
-    rule, 
-    repeat(
-      seq(
-        choice(',', /\r?\n/),
-        rule)
-      )
+    rule,
+    repeat(seq(choice(',', /\r?\n/), rule)),
+    optional(choice(',', /\r?\n/))
+  );
+}
+
+// Build an $ifthen ... $endif block whose body is a sequence of the
+// given entry rule (set_entry / param_entry / etc.). Used so each
+// declaration kind can reuse the same conditional-include shape
+// without entry types overlapping in a single combined rule.
+function makeDeclIfthenBlock($, entryRule) {
+  const inner = choice(
+    entryRule,
+    $.dollar_directive,
+    // self-reference: nested $ifthen inside the current decl context
+    // is admitted via the surrounding declaration's commaOrNewlineSep1.
+  );
+  return seq(
+    $.ifthen_directive,
+    repeat(inner),
+    repeat(seq(
+      $.elseif_directive,
+      repeat(inner)
+    )),
+    optional(seq(
+      $.else_directive,
+      repeat(inner)
+    )),
+    $.endif_directive
   );
 }
 
