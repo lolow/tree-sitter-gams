@@ -220,8 +220,11 @@ module.exports = grammar({
     ),
 
     element_entry: $ => seq(
-      $.identifier,
-      optional($.string)           
+      // Set elements may contain hyphens (e.g. `san-diego`). The lexer
+      // prefers `identifier` (the word rule) for hyphen-free names like
+      // `seattle`, so we accept either token here.
+      choice($.set_element, $.identifier),
+      optional($.string)
     ),
 
     // subset
