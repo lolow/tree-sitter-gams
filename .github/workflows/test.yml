@@ -49,10 +49,16 @@ jobs:
               echo "OK   $f"
             fi
           done
-          # Every other test file must still parse without aborting the
-          # tool; ERROR nodes are tolerated for those.
+          # Every other test file must not crash the tool. tree-sitter
+          # parse exits 1 on ERROR nodes (which we tolerate for these
+          # fixtures) and 139 / similar on a real crash, so we accept
+          # 0 and 1 here and fail only on higher exit codes.
           for f in test/*.gms; do
-            ./node_modules/.bin/tree-sitter parse "$f" >/dev/null 2>&1 \
-              || { echo "::error file=$f::tree-sitter parse aborted"; fail=1; }
+            ./node_modules/.bin/tree-sitter parse "$f" >/dev/null 2>&1
+            rc=$?
+            if [ $rc -gt 1 ]; then
+              echo "::error file=$f::tree-sitter parse crashed (exit $rc)"
+              fail=1
+            fi
           done
           exit $fail
