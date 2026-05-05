@@ -1,0 +1,58 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install tree-sitter-cli
+        run: npm install --no-save tree-sitter-cli
+
+      - name: Generate parser
+        run: ./node_modules/.bin/tree-sitter generate
+
+      - name: Build parser
+        run: ./node_modules/.bin/tree-sitter build --output /tmp/gams.so
+
+      - name: Parse all sample fixtures (no ERROR nodes for the listed set)
+        run: |
+          set -e
+          # These fixtures are expected to parse cleanly. Files known to
+          # exercise upstream's pre-existing expression / parameter-data
+          # gaps (assignments, code_sample, control_flow, display,
+          # parameters) are excluded from the must-be-clean list.
+          must_be_clean=(
+            test/sets.gms
+            test/scalars.gms
+            test/equations.gms
+            test/model.gms
+            test/variables.gms
+            test/solve.gms
+          )
+          fail=0
+          for f in "${must_be_clean[@]}"; do
+            errs=$(./node_modules/.bin/tree-sitter parse "$f" 2>/dev/null | grep -c ERROR || true)
+            if [ "$errs" != "0" ]; then
+              echo "::error file=$f::Expected 0 ERROR nodes, got $errs"
+              fail=1
+            else
+              echo "OK   $f"
+            fi
+          done
+          # Every other test file must still parse without aborting the
+          # tool; ERROR nodes are tolerated for those.
+          for f in test/*.gms; do
+            ./node_modules/.bin/tree-sitter parse "$f" >/dev/null 2>&1 \
+              || { echo "::error file=$f::tree-sitter parse aborted"; fail=1; }
+          done
+          exit $fail
