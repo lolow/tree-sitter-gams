@@ -3560,43 +3560,15 @@
           },
           {
             "type": "STRING",
-            "value": "ord"
+            "value": "arccos"
           },
           {
             "type": "STRING",
-            "value": "card"
+            "value": "arcsin"
           },
           {
             "type": "STRING",
-            "value": "val"
-          },
-          {
-            "type": "STRING",
-            "value": "exp"
-          },
-          {
-            "type": "STRING",
-            "value": "log"
-          },
-          {
-            "type": "STRING",
-            "value": "log10"
-          },
-          {
-            "type": "STRING",
-            "value": "sqrt"
-          },
-          {
-            "type": "STRING",
-            "value": "sin"
-          },
-          {
-            "type": "STRING",
-            "value": "cos"
-          },
-          {
-            "type": "STRING",
-            "value": "tan"
+            "value": "arctan"
           },
           {
             "type": "STRING",
@@ -3608,19 +3580,11 @@
           },
           {
             "type": "STRING",
-            "value": "arctan"
+            "value": "bool_not"
           },
           {
             "type": "STRING",
-            "value": "sinh"
-          },
-          {
-            "type": "STRING",
-            "value": "cosh"
-          },
-          {
-            "type": "STRING",
-            "value": "tanh"
+            "value": "card"
           },
           {
             "type": "STRING",
@@ -3628,7 +3592,135 @@
           },
           {
             "type": "STRING",
+            "value": "cos"
+          },
+          {
+            "type": "STRING",
+            "value": "cosh"
+          },
+          {
+            "type": "STRING",
+            "value": "entropy"
+          },
+          {
+            "type": "STRING",
+            "value": "errorf"
+          },
+          {
+            "type": "STRING",
+            "value": "exp"
+          },
+          {
+            "type": "STRING",
+            "value": "fact"
+          },
+          {
+            "type": "STRING",
             "value": "floor"
+          },
+          {
+            "type": "STRING",
+            "value": "frac"
+          },
+          {
+            "type": "STRING",
+            "value": "gamma"
+          },
+          {
+            "type": "STRING",
+            "value": "gday"
+          },
+          {
+            "type": "STRING",
+            "value": "gdow"
+          },
+          {
+            "type": "STRING",
+            "value": "ghour"
+          },
+          {
+            "type": "STRING",
+            "value": "gleap"
+          },
+          {
+            "type": "STRING",
+            "value": "gmillisec"
+          },
+          {
+            "type": "STRING",
+            "value": "gminute"
+          },
+          {
+            "type": "STRING",
+            "value": "gmonth"
+          },
+          {
+            "type": "STRING",
+            "value": "gsecond"
+          },
+          {
+            "type": "STRING",
+            "value": "gyear"
+          },
+          {
+            "type": "STRING",
+            "value": "handlecollect"
+          },
+          {
+            "type": "STRING",
+            "value": "handledelete"
+          },
+          {
+            "type": "STRING",
+            "value": "handlestatus"
+          },
+          {
+            "type": "STRING",
+            "value": "handlesubmit"
+          },
+          {
+            "type": "STRING",
+            "value": "jobkill"
+          },
+          {
+            "type": "STRING",
+            "value": "jobstatus"
+          },
+          {
+            "type": "STRING",
+            "value": "jobterminate"
+          },
+          {
+            "type": "STRING",
+            "value": "log10"
+          },
+          {
+            "type": "STRING",
+            "value": "log2"
+          },
+          {
+            "type": "STRING",
+            "value": "log"
+          },
+          {
+            "type": "STRING",
+            "value": "loggamma"
+          },
+          {
+            "type": "STRING",
+            "value": "logit"
+          },
+          {
+            "type": "STRING",
+            "value": "mapval"
+          },
+          {
+            "type": "STRING",
+            "value": "ord"
+          },
+          {
+            "type": "STRING",
+            "value": "sigmoid"
           },
           {
             "type": "STRING",
@@ -3636,7 +3728,31 @@
           },
           {
             "type": "STRING",
+            "value": "sin"
+          },
+          {
+            "type": "STRING",
+            "value": "sinh"
+          },
+          {
+            "type": "STRING",
+            "value": "sleep"
+          },
+          {
+            "type": "STRING",
             "value": "sqr"
+          },
+          {
+            "type": "STRING",
+            "value": "sqrt"
+          },
+          {
+            "type": "STRING",
+            "value": "tan"
+          },
+          {
+            "type": "STRING",
+            "value": "tanh"
           },
           {
             "type": "STRING",
@@ -3644,7 +3760,7 @@
           },
           {
             "type": "STRING",
-            "value": "frac"
+            "value": "val"
           }
         ]
       }
@@ -3682,7 +3798,67 @@
         "members": [
           {
             "type": "STRING",
-            "value": "uniform"
+            "value": "arctan2"
+          },
+          {
+            "type": "STRING",
+            "value": "beta"
+          },
+          {
+            "type": "STRING",
+            "value": "binomial"
+          },
+          {
+            "type": "STRING",
+            "value": "bool_and"
+          },
+          {
+            "type": "STRING",
+            "value": "bool_eqv"
+          },
+          {
+            "type": "STRING",
+            "value": "bool_imp"
+          },
+          {
+            "type": "STRING",
+            "value": "bool_or"
+          },
+          {
+            "type": "STRING",
+            "value": "bool_xor"
+          },
+          {
+            "type": "STRING",
+            "value": "cvpower"
+          },
+          {
+            "type": "STRING",
+            "value": "diag"
+          },
+          {
+            "type": "STRING",
+            "value": "div0"
+          },
+          {
+            "type": "STRING",
+            "value": "div"
+          },
+          {
+            "type": "STRING",
+            "value": "gammareg"
+          },
+          {
+            "type": "STRING",
+            "value": "logbeta"
+          },
+          {
+            "type": "STRING",
+            "value": "mod"
+          },
+          {
+            "type": "STRING",
+            "value": "normal"
           },
           {
             "type": "STRING",
@@ -3690,7 +3866,55 @@
           },
           {
             "type": "STRING",
-            "value": "mod"
+            "value": "randbinomial"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_eq"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_ge"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_gt"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_le"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_lt"
+          },
+          {
+            "type": "STRING",
+            "value": "rel_ne"
+          },
+          {
+            "type": "STRING",
+            "value": "rpower"
+          },
+          {
+            "type": "STRING",
+            "value": "sameas"
+          },
+          {
+            "type": "STRING",
+            "value": "signpower"
+          },
+          {
+            "type": "STRING",
+            "value": "uniform"
+          },
+          {
+            "type": "STRING",
+            "value": "uniformint"
+          },
+          {
+            "type": "STRING",
+            "value": "vcpower"
           }
         ]
       }
@@ -3736,6 +3960,46 @@
         "members": [
           {
             "type": "STRING",
+            "value": "betareg"
+          },
+          {
+            "type": "STRING",
+            "value": "centropy"
+          },
+          {
+            "type": "STRING",
+            "value": "edist"
+          },
+          {
+            "type": "STRING",
+            "value": "ifthen"
+          },
+          {
+            "type": "STRING",
+            "value": "jdate"
+          },
+          {
+            "type": "STRING",
+            "value": "jtime"
+          },
+          {
+            "type": "STRING",
+            "value": "lsemax"
+          },
+          {
+            "type": "STRING",
+            "value": "lsemaxsc"
+          },
+          {
+            "type": "STRING",
+            "value": "lsemin"
+          },
+          {
+            "type": "STRING",
+            "value": "lseminsc"
+          },
+          {
+            "type": "STRING",
             "value": "max"
           },
           {
@@ -3744,7 +4008,63 @@
           },
           {
             "type": "STRING",
+            "value": "ncpcm"
+          },
+          {
+            "type": "STRING",
+            "value": "ncpf"
+          },
+          {
+            "type": "STRING",
+            "value": "ncpvupow"
+          },
+          {
+            "type": "STRING",
+            "value": "ncpvusin"
+          },
+          {
+            "type": "STRING",
+            "value": "poly"
+          },
+          {
+            "type": "STRING",
+            "value": "randlinear"
+          },
+          {
+            "type": "STRING",
+            "value": "randtriangle"
+          },
+          {
+            "type": "STRING",
+            "value": "readycollect"
+          },
+          {
+            "type": "STRING",
             "value": "round"
+          },
+          {
+            "type": "STRING",
+            "value": "slexp"
+          },
+          {
+            "type": "STRING",
+            "value": "sllog10"
+          },
+          {
+            "type": "STRING",
+            "value": "slrec"
+          },
+          {
+            "type": "STRING",
+            "value": "sqexp"
+          },
+          {
+            "type": "STRING",
+            "value": "sqlog10"
+          },
+          {
+            "type": "STRING",
+            "value": "sqrec"
           }
         ]
       }

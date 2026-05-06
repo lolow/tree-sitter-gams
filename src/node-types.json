@@ -2083,7 +2083,19 @@
     "named": false
   },
   {
+    "type": "arccos",
+    "named": false
+  },
+  {
+    "type": "arcsin",
+    "named": false
+  },
+  {
     "type": "arctan",
+    "named": false
+  },
+  {
+    "type": "arctan2",
     "named": false
   },
   {
@@ -2093,6 +2105,18 @@
   {
     "type": "bare_identifier",
     "named": true
+  },
+  {
+    "type": "beta",
+    "named": false
+  },
+  {
+    "type": "betareg",
+    "named": false
+  },
+  {
+    "type": "binomial",
+    "named": false
   },
   {
     "type": "block_comment_c",
@@ -2109,6 +2133,30 @@
     "named": true
   },
   {
+    "type": "bool_and",
+    "named": false
+  },
+  {
+    "type": "bool_eqv",
+    "named": false
+  },
+  {
+    "type": "bool_imp",
+    "named": false
+  },
+  {
+    "type": "bool_not",
+    "named": false
+  },
+  {
+    "type": "bool_or",
+    "named": false
+  },
+  {
+    "type": "bool_xor",
+    "named": false
+  },
+  {
     "type": "card",
     "named": false
   },
@@ -2117,11 +2165,23 @@
     "named": false
   },
   {
+    "type": "centropy",
+    "named": false
+  },
+  {
     "type": "cos",
     "named": false
   },
   {
     "type": "cosh",
+    "named": false
+  },
+  {
+    "type": "cvpower",
+    "named": false
+  },
+  {
+    "type": "diag",
     "named": false
   },
   {
@@ -2137,6 +2197,14 @@
     "named": true
   },
   {
+    "type": "div",
+    "named": false
+  },
+  {
+    "type": "div0",
+    "named": false
+  },
+  {
     "type": "dollar_directive_end",
     "named": true
   },
@@ -2147,6 +2215,10 @@
   {
     "type": "echo_body",
     "named": true
+  },
+  {
+    "type": "edist",
+    "named": false
   },
   {
     "type": "else",
@@ -2161,6 +2233,10 @@
     "named": true
   },
   {
+    "type": "entropy",
+    "named": false
+  },
+  {
     "type": "equation_definition_op",
     "named": true
   },
@@ -2169,7 +2245,15 @@
     "named": true
   },
   {
+    "type": "errorf",
+    "named": false
+  },
+  {
     "type": "exp",
+    "named": false
+  },
+  {
+    "type": "fact",
     "named": false
   },
   {
@@ -2181,11 +2265,95 @@
     "named": false
   },
   {
+    "type": "gamma",
+    "named": false
+  },
+  {
+    "type": "gammareg",
+    "named": false
+  },
+  {
+    "type": "gday",
+    "named": false
+  },
+  {
+    "type": "gdow",
+    "named": false
+  },
+  {
+    "type": "ghour",
+    "named": false
+  },
+  {
+    "type": "gleap",
+    "named": false
+  },
+  {
+    "type": "gmillisec",
+    "named": false
+  },
+  {
+    "type": "gminute",
+    "named": false
+  },
+  {
+    "type": "gmonth",
+    "named": false
+  },
+  {
+    "type": "gsecond",
+    "named": false
+  },
+  {
+    "type": "gyear",
+    "named": false
+  },
+  {
+    "type": "handlecollect",
+    "named": false
+  },
+  {
+    "type": "handledelete",
+    "named": false
+  },
+  {
+    "type": "handlestatus",
+    "named": false
+  },
+  {
+    "type": "handlesubmit",
+    "named": false
+  },
+  {
     "type": "identifier",
     "named": true
   },
   {
     "type": "if",
+    "named": false
+  },
+  {
+    "type": "ifthen",
+    "named": false
+  },
+  {
+    "type": "jdate",
+    "named": false
+  },
+  {
+    "type": "jobkill",
+    "named": false
+  },
+  {
+    "type": "jobstatus",
+    "named": false
+  },
+  {
+    "type": "jobterminate",
+    "named": false
+  },
+  {
+    "type": "jtime",
     "named": false
   },
   {
@@ -2202,12 +2370,48 @@
     "named": false
   },
   {
+    "type": "log2",
+    "named": false
+  },
+  {
+    "type": "logbeta",
+    "named": false
+  },
+  {
+    "type": "loggamma",
+    "named": false
+  },
+  {
+    "type": "logit",
+    "named": false
+  },
+  {
     "type": "loop_keyword",
     "named": true
   },
   {
+    "type": "lsemax",
+    "named": false
+  },
+  {
+    "type": "lsemaxsc",
+    "named": false
+  },
+  {
+    "type": "lsemin",
+    "named": false
+  },
+  {
+    "type": "lseminsc",
+    "named": false
+  },
+  {
     "type": "macro_ref",
     "named": true
+  },
+  {
+    "type": "mapval",
+    "named": false
   },
   {
     "type": "max",
@@ -2224,6 +2428,26 @@
   {
     "type": "model_type",
     "named": true
+  },
+  {
+    "type": "ncpcm",
+    "named": false
+  },
+  {
+    "type": "ncpf",
+    "named": false
+  },
+  {
+    "type": "ncpvupow",
+    "named": false
+  },
+  {
+    "type": "ncpvusin",
+    "named": false
+  },
+  {
+    "type": "normal",
+    "named": false
   },
   {
     "type": "number",
@@ -2258,6 +2482,10 @@
     "named": false
   },
   {
+    "type": "poly",
+    "named": false
+  },
+  {
     "type": "power",
     "named": false
   },
@@ -2270,7 +2498,55 @@
     "named": true
   },
   {
+    "type": "randbinomial",
+    "named": false
+  },
+  {
+    "type": "randlinear",
+    "named": false
+  },
+  {
+    "type": "randtriangle",
+    "named": false
+  },
+  {
+    "type": "readycollect",
+    "named": false
+  },
+  {
+    "type": "rel_eq",
+    "named": false
+  },
+  {
+    "type": "rel_ge",
+    "named": false
+  },
+  {
+    "type": "rel_gt",
+    "named": false
+  },
+  {
+    "type": "rel_le",
+    "named": false
+  },
+  {
+    "type": "rel_lt",
+    "named": false
+  },
+  {
+    "type": "rel_ne",
+    "named": false
+  },
+  {
     "type": "round",
+    "named": false
+  },
+  {
+    "type": "rpower",
+    "named": false
+  },
+  {
+    "type": "sameas",
     "named": false
   },
   {
@@ -2282,7 +2558,15 @@
     "named": true
   },
   {
+    "type": "sigmoid",
+    "named": false
+  },
+  {
     "type": "sign",
+    "named": false
+  },
+  {
+    "type": "signpower",
     "named": false
   },
   {
@@ -2291,6 +2575,22 @@
   },
   {
     "type": "sinh",
+    "named": false
+  },
+  {
+    "type": "sleep",
+    "named": false
+  },
+  {
+    "type": "slexp",
+    "named": false
+  },
+  {
+    "type": "sllog10",
+    "named": false
+  },
+  {
+    "type": "slrec",
     "named": false
   },
   {
@@ -2310,7 +2610,19 @@
     "named": false
   },
   {
+    "type": "sqexp",
+    "named": false
+  },
+  {
+    "type": "sqlog10",
+    "named": false
+  },
+  {
     "type": "sqr",
+    "named": false
+  },
+  {
+    "type": "sqrec",
     "named": false
   },
   {
@@ -2338,7 +2650,15 @@
     "named": false
   },
   {
+    "type": "uniformint",
+    "named": false
+  },
+  {
     "type": "val",
+    "named": false
+  },
+  {
+    "type": "vcpower",
     "named": false
   }
 ]

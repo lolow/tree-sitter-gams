@@ -769,34 +769,31 @@ module.exports = grammar({
       $.expression
     )),
 
-    unary_builtin_function_keyword: $ =>
-      prec(5,
-        choice(
-          'abs',
-          'ord',
-          'card',
-          'val',
-          'exp',
-          'log',
-          'log10',
-          'sqrt',
-          'sin',
-          'cos',
-          'tan',
-          'asin',
-          'acos',
-          'arctan',
-          'sinh',
-          'cosh',
-          'tanh',
-          'ceil',
-          'floor',
-          'sign',
-          'sqr',
-          'trunc',
-          'frac'
-        )
-    ),
+    // Built-in functions catalog. Names are sourced from the GAMS
+    // Intrinsic Functions table
+    // (UG_Parameters.html#UG_Parameters_IntrinsicFunctions) plus the
+    // predefined symbols for logical conditions
+    // (UG_CondExpr.html — sameAs, diag).
+    //
+    // Names are listed as plain string literals (not regex) so
+    // tree-sitter auto-extracts them as keywords with word-boundary
+    // semantics. The trade-off: matches are case-sensitive, so only
+    // the lowercase form is recognised. GAMS source convention is
+    // overwhelmingly lowercase; uppercase users can map their style
+    // through GAMS itself, which is case-insensitive at the
+    // language level.
+    unary_builtin_function_keyword: $ => prec(5, choice(
+      'abs', 'arccos', 'arcsin', 'arctan', 'asin', 'acos',
+      'bool_not', 'card', 'ceil', 'cos', 'cosh',
+      'entropy', 'errorf', 'exp', 'fact', 'floor', 'frac', 'gamma',
+      'gday', 'gdow', 'ghour', 'gleap', 'gmillisec', 'gminute',
+      'gmonth', 'gsecond', 'gyear',
+      'handlecollect', 'handledelete', 'handlestatus', 'handlesubmit',
+      'jobkill', 'jobstatus', 'jobterminate',
+      'log10', 'log2', 'log', 'loggamma', 'logit', 'mapval', 'ord',
+      'sigmoid', 'sign', 'sin', 'sinh', 'sleep', 'sqr', 'sqrt',
+      'tan', 'tanh', 'trunc', 'val'
+    )),
 
     unary_builtin_function_expr: $ =>
       prec(5,
@@ -809,14 +806,14 @@ module.exports = grammar({
       ),
 
 
-    binary_builtin_function_keyword: $ =>
-      prec(4,
-        choice(
-          'uniform',
-          'power',
-          'mod'
-        )
-      ),
+    binary_builtin_function_keyword: $ => prec(4, choice(
+      'arctan2', 'beta', 'binomial',
+      'bool_and', 'bool_eqv', 'bool_imp', 'bool_or', 'bool_xor',
+      'cvpower', 'diag', 'div0', 'div',
+      'gammareg', 'logbeta', 'mod', 'normal', 'power', 'randbinomial',
+      'rel_eq', 'rel_ge', 'rel_gt', 'rel_le', 'rel_lt', 'rel_ne',
+      'rpower', 'sameas', 'signpower', 'uniform', 'uniformint', 'vcpower'
+    )),
 
     binary_builtin_function_expr: $ =>
       prec(4,
@@ -830,14 +827,19 @@ module.exports = grammar({
         )
       ),
 
-    multi_args_builtin_function_keyword: $ =>
-      prec(3,
-        choice(
-          'max',
-          'min',
-          'round'
-        )
-      ),
+    // Variadic / N-arg functions (1+, 2+, 3+, 1-2, 2-3, 3+).
+    // The expr rule below admits any number of comma-separated
+    // arguments >= 1, so the precise per-function arity is not
+    // enforced at parse time — that's a semantic check.
+    multi_args_builtin_function_keyword: $ => prec(3, choice(
+      'betareg', 'centropy', 'edist',
+      'ifthen', 'jdate', 'jtime',
+      'lsemax', 'lsemaxsc', 'lsemin', 'lseminsc',
+      'max', 'min',
+      'ncpcm', 'ncpf', 'ncpvupow', 'ncpvusin',
+      'poly', 'randlinear', 'randtriangle', 'readycollect', 'round',
+      'slexp', 'sllog10', 'slrec', 'sqexp', 'sqlog10', 'sqrec'
+    )),
 
     multi_args_builtin_function_expr: $ =>
       prec(3,
