@@ -1603,17 +1603,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "PATTERN",
-                  "value": "\\s*\\n\\s*"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "param_data_block"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "param_data_block"
             },
             {
               "type": "BLANK"

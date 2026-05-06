@@ -28,9 +28,9 @@ jobs:
         run: |
           set -e
           # These fixtures are expected to parse cleanly. Files known to
-          # exercise upstream's pre-existing expression / parameter-data
-          # gaps (assignments, code_sample, control_flow, display,
-          # parameters) are excluded from the must-be-clean list.
+          # exercise upstream's pre-existing expression gaps (assignments,
+          # code_sample, control_flow, display) are excluded from the
+          # must-be-clean list.
           must_be_clean=(
             test/sets.gms
             test/scalars.gms
@@ -38,6 +38,7 @@ jobs:
             test/model.gms
             test/variables.gms
             test/solve.gms
+            test/parameters.gms
           )
           fail=0
           for f in "${must_be_clean[@]}"; do

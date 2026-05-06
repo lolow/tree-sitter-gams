@@ -418,7 +418,7 @@ module.exports = grammar({
         $.name_with_macros           // param_name (may have %macro%)
       ),
       optional($.string),           // ["text"]
-      optional(seq(/\s*\n\s*/, $.param_data_block))           // [/ ... /]
+      optional($.param_data_block)  // [/ ... /]
     ),
 
     param_data_block: $ => seq(
