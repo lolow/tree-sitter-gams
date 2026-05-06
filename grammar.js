@@ -548,10 +548,14 @@ module.exports = grammar({
 
     equation_relational_op: $ => token(caseInsensitive('=e=|=l=|=g=|=n=|=x=|=c=|=b=')),
 
-    // Table declaration. The 2D data layout (column header + rows) is
-    // captured as one opaque `table_body` token through the next `;`.
-    // This keeps the table block visually distinct for highlighting
-    // without modelling row/column semantics in the syntax tree.
+    // Table declaration. The 2D data layout (column header + rows)
+    // is modelled as a flat sequence of cell tokens — identifiers,
+    // set_elements, numbers, bools, strings — terminated by the
+    // statement-level `;`. The grammar does NOT enforce row/column
+    // alignment (whitespace is irrelevant to the parse tree); it
+    // exposes each cell as its own node so highlights.scm can
+    // colour row keys / column headers distinctly from numeric
+    // data, the same way it does inside a param_data_block.
     table_keyword: $ => prec(9, choice(
       token.immediate(caseInsensitive('table')),
       token.immediate(caseInsensitive('tables'))
@@ -564,7 +568,12 @@ module.exports = grammar({
       optional(field('data', $.table_body))
     ),
 
-    table_body: $ => token(prec(-1, /[^;]+/)),
+    table_body: $ => prec(-1, repeat1(choice(
+      $.identifier,
+      $.set_element,
+      $.number,
+      $.bool,
+    ))),
 
 
 

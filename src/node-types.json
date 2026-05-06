@@ -1768,6 +1768,33 @@
     "fields": {}
   },
   {
+    "type": "table_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "bool",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "set_element",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "table_declaration",
     "named": true,
     "fields": {
@@ -2293,10 +2320,6 @@
   {
     "type": "sum",
     "named": false
-  },
-  {
-    "type": "table_body",
-    "named": true
   },
   {
     "type": "tan",
