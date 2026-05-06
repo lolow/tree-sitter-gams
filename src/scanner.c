@@ -1,27 +1,30 @@
 // External scanner for tree-sitter-gams.
 //
 // Recognises lexical forms that tree-sitter's regex-based lexer cannot
-// express cleanly, plus dedicated tokens for the GAMS block-control
-// directives so the grammar can model their structural pairing.
+// express cleanly:
 //
-// Comments
 //   line_comment             column-0 '*' through end of line, OR '#' /
 //                            '//' anywhere through end of line
 //   block_comment_c          /* ... */ (no nesting)
 //   block_comment_dollar     $ontext ... $offtext (case-insensitive,
 //                            both leading-$ at column 0 and inline $$)
-//
-// Generic dollar directive
-//   dollar_directive_keyword $name (no .label suffix; label is a
-//                            separate regex token in the grammar)
+//   dollar_directive_keyword $name for any non-block directive. The
+//                            $ifthen / $elseIf / $else / $endif family
+//                            is intentionally NOT given dedicated
+//                            tokens — those directives parse as
+//                            generic dollar_directive nodes (via the
+//                            extras path in grammar.js) so the parser
+//                            doesn't fight real GAMS code that
+//                            intersperses conditional directives with
+//                            arbitrary content.
 //   dollar_directive_end     emitted at \n or EOF inside a directive's
 //                            args, terminating the args repeat
 //
-// Block-control directives — each opens or closes a paired construct
-//   ifthen_keyword           $ifthen / $ifthenE / $ifthenI
-//   elseif_keyword           $elseIf / $elseIfE / $elseIfI
-//   else_keyword             $else
-//   endif_keyword            $endif
+// Block-control directives — paired open/close with an opaque body.
+// These ARE structural because their bodies hold non-GAMS text
+// (echo/put output or an embedded sub-language) that the main lexer
+// cannot tokenise. The body markers are scanned as single opaque
+// tokens up to the matching $off<name> at column 0.
 //   onecho_keyword           $onEcho / $onEchoS / $onEchoV
 //   offecho_keyword          $offEcho
 //   onput_keyword            $onPut / $onPutS / $onPutV
@@ -29,10 +32,11 @@
 //   onembedded_keyword       $onEmbeddedCode / $onEmbeddedCodeS /
 //                            $onEmbeddedCodeV
 //   offembedded_keyword      $offEmbeddedCode
-//   embedded_body            Opaque content between $onEmbeddedCode
-//                            and $offEmbeddedCode (consumed as a
-//                            single token; injection.scm re-parses
-//                            it as the chosen embedded language).
+//   echo_body                Opaque text between $onEcho and $offEcho
+//   put_body                 Opaque text between $onPut and $offPut
+//   embedded_body            Opaque text between $onEmbeddedCode and
+//                            $offEmbeddedCode (injections.scm
+//                            re-parses it as the chosen sub-language)
 //
 // Compile-time invariant: the order of TokenType members must match
 // the `externals` array in grammar.js exactly.
@@ -51,10 +55,6 @@ typedef enum {
   T_BLOCK_COMMENT_DOLLAR,
   T_DOLLAR_DIRECTIVE_KEYWORD,
   T_DOLLAR_DIRECTIVE_END,
-  T_IFTHEN_KEYWORD,
-  T_ELSEIF_KEYWORD,
-  T_ELSE_KEYWORD,
-  T_ENDIF_KEYWORD,
   T_ONECHO_KEYWORD,
   T_OFFECHO_KEYWORD,
   T_ONPUT_KEYWORD,
@@ -64,7 +64,6 @@ typedef enum {
   T_EMBEDDED_BODY,
   T_ECHO_BODY,
   T_PUT_BODY,
-  T_COUNT_,
 } TokenType;
 
 static int g_dummy;
@@ -103,33 +102,22 @@ static int is_id_continue(int32_t c) {
   return is_id_start(c) || (c >= '0' && c <= '9');
 }
 
-// Case-insensitive comparison of name buffer against a literal.
 static int name_eq(const char *name, int n, const char *lit) {
   int len = (int)strlen(lit);
   if (n != len) return 0;
   return memcmp(name, lit, (size_t)len) == 0;
 }
 
-// Map the directive name to a control-directive token type, or
-// T_DOLLAR_DIRECTIVE_KEYWORD if none matches.
+// Map the directive name to a block-control token type, or
+// T_DOLLAR_DIRECTIVE_KEYWORD for any other directive (which the
+// grammar parses generically via the extras path).
 static TokenType classify_directive(const char *name, int n) {
-  // ifthen / ifthenE / ifthenI
-  if (name_eq(name, n, "ifthen") || name_eq(name, n, "ifthene") ||
-      name_eq(name, n, "iftheni")) return T_IFTHEN_KEYWORD;
-  // elseif / elseifE / elseifI
-  if (name_eq(name, n, "elseif") || name_eq(name, n, "elseife") ||
-      name_eq(name, n, "elseifi")) return T_ELSEIF_KEYWORD;
-  if (name_eq(name, n, "else"))    return T_ELSE_KEYWORD;
-  if (name_eq(name, n, "endif"))   return T_ENDIF_KEYWORD;
-  // onEcho / onEchoS / onEchoV / offEcho
   if (name_eq(name, n, "onecho") || name_eq(name, n, "onechos") ||
       name_eq(name, n, "onechov")) return T_ONECHO_KEYWORD;
   if (name_eq(name, n, "offecho")) return T_OFFECHO_KEYWORD;
-  // onPut / onPutS / onPutV / offPut
   if (name_eq(name, n, "onput") || name_eq(name, n, "onputs") ||
       name_eq(name, n, "onputv")) return T_ONPUT_KEYWORD;
   if (name_eq(name, n, "offput")) return T_OFFPUT_KEYWORD;
-  // onEmbeddedCode / onEmbeddedCodeS / onEmbeddedCodeV / offEmbeddedCode
   if (name_eq(name, n, "onembeddedcode") ||
       name_eq(name, n, "onembeddedcodes") ||
       name_eq(name, n, "onembeddedcodev")) return T_ONEMBEDDED_KEYWORD;
@@ -142,6 +130,8 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
   (void)payload;
 
   // ---- (priority 1) directive end-of-line marker ---------------------
+  // The parser admits this external only inside a dollar_directive's
+  // body; seeing it in valid_symbols is the signal to terminate.
   if (valid_symbols[T_DOLLAR_DIRECTIVE_END]) {
     while (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
            lexer->lookahead == '\r') {
@@ -161,11 +151,11 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
 
   // ---- (priority 2) opaque block bodies ($onEcho / $onPut /
   //                   $onEmbeddedCode). Each is active right after
-  //                   the corresponding open directive's
-  //                   directive_end. The scanner consumes lines
-  //                   until it reaches a column-0 $off<closer>; that
-  //                   closing directive itself is NOT part of the
-  //                   body token (mark_end excludes it).
+  //                   the corresponding open directive's directive_end.
+  //                   The scanner consumes lines until it reaches a
+  //                   column-0 $off<closer>; that closing directive
+  //                   itself is NOT part of the body token (mark_end
+  //                   excludes it).
   {
     const char *closer = NULL;
     TokenType produced = (TokenType)0;
@@ -181,8 +171,7 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
       for (;;) {
         if (lexer->lookahead == 0) {
           // EOF without finding the closer — don't emit a body token.
-          // The parser then reports the unclosed block as an ERROR
-          // node, matching the integrity check we get for $ifthen.
+          // The parser then reports the unclosed block as an ERROR.
           return false;
         }
         if (saw_newline && lexer->lookahead == '$' &&
@@ -195,7 +184,7 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
             return true;
           }
           // Not the closer; keep scanning. mark_end will be reset
-          // on the next pass that finds either the closer or EOF.
+          // on the next pass.
         }
         saw_newline = (lexer->lookahead == '\n');
         lexer->advance(lexer, false);
@@ -253,10 +242,6 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
   int any_keyword_valid =
       valid_symbols[T_BLOCK_COMMENT_DOLLAR] ||
       valid_symbols[T_DOLLAR_DIRECTIVE_KEYWORD] ||
-      valid_symbols[T_IFTHEN_KEYWORD] ||
-      valid_symbols[T_ELSEIF_KEYWORD] ||
-      valid_symbols[T_ELSE_KEYWORD] ||
-      valid_symbols[T_ENDIF_KEYWORD] ||
       valid_symbols[T_ONECHO_KEYWORD] ||
       valid_symbols[T_OFFECHO_KEYWORD] ||
       valid_symbols[T_ONPUT_KEYWORD] ||
@@ -277,17 +262,17 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
     //   - $<name>   at column 0 (top-level directive)
     //   - $<name>   when DIRECTIVE_END is valid — chained directive
     //               inside another's args
-    //   - $<name>   when ENDIF / OFFECHO / OFFPUT / OFFEMBEDDED is
-    //               valid — we are inside a control block, where
-    //               indented $-directives are conventional
+    //   - $<name>   when an OFF closer is valid — we are inside a
+    //               control block body, where indented $-directives
+    //               are conventional (though for the on/off/embedded
+    //               blocks the body is opaque and consumed before
+    //               this branch fires; this matters only at the
+    //               body→close boundary for the closer itself).
     int in_directive_args = valid_symbols[T_DOLLAR_DIRECTIVE_END];
     int in_control_block =
-        valid_symbols[T_ENDIF_KEYWORD] ||
         valid_symbols[T_OFFECHO_KEYWORD] ||
         valid_symbols[T_OFFPUT_KEYWORD] ||
-        valid_symbols[T_OFFEMBEDDED_KEYWORD] ||
-        valid_symbols[T_ELSEIF_KEYWORD] ||
-        valid_symbols[T_ELSE_KEYWORD];
+        valid_symbols[T_OFFEMBEDDED_KEYWORD];
     if (!double_dollar && col != 0 &&
         !in_directive_args && !in_control_block) {
       return false;
@@ -335,15 +320,17 @@ bool tree_sitter_gams_external_scanner_scan(void *payload, TSLexer *lexer,
     // positioned at the `.` lets it match next.
     TokenType kind = classify_directive(name, n);
     if (kind != T_DOLLAR_DIRECTIVE_KEYWORD) {
-      // Control directive: only emit it where the parser admits it.
-      // An orphan $endif / $else / $offEcho etc. produces no token
-      // here; tree-sitter then reports an ERROR node, which is the
-      // intended structural-integrity feedback.
+      // Block-control directive: only emit it where the parser
+      // admits it. Otherwise fall through to the generic
+      // dollar_directive_keyword path so e.g. an orphan $offEcho
+      // outside an on/echo block still parses (as a generic
+      // directive line) instead of producing ERROR nodes. This
+      // matches the "directives are extras" philosophy applied to
+      // $ifthen / $endif.
       if (valid_symbols[kind]) {
         lexer->result_symbol = kind;
         return true;
       }
-      return false;
     }
     if (valid_symbols[T_DOLLAR_DIRECTIVE_KEYWORD]) {
       lexer->result_symbol = T_DOLLAR_DIRECTIVE_KEYWORD;

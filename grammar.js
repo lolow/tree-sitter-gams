@@ -1,12 +1,21 @@
 module.exports = grammar({
   name: 'gams',
 
+  // Extras run between any two tokens. Putting `dollar_directive` in
+  // here lets a column-0 $-line appear ANYWHERE — between equation
+  // body lines, mid-expression, between declaration entries — and
+  // not derail the surrounding parse. Strict structural pairing for
+  // $ifthen / $endif and friends is intentionally NOT modelled: it
+  // fights real-world GAMS code that intersperses directives with
+  // arbitrary content. The lexer pre-processor analogy is the right
+  // one — directives are skipped over as far as the AST is concerned.
   extras: $ => [
     /[ \t\r]/,
     $.line_comment,
     $.block_comment_c,
     $.block_comment_dollar,
     /\n/,
+    $.dollar_directive,
   ],
 
   externals: $ => [
@@ -15,10 +24,6 @@ module.exports = grammar({
     $.block_comment_dollar,
     $.dollar_directive_keyword,
     $.dollar_directive_end,
-    $.ifthen_keyword,
-    $.elseif_keyword,
-    $.else_keyword,
-    $.endif_keyword,
     $.onecho_keyword,
     $.offecho_keyword,
     $.onput_keyword,
@@ -33,36 +38,27 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   rules: {
-    source_file: $ => repeat($._top_level_item),
-
-    _top_level_item: $ => choice(
+    // Top-level items are either ordinary statements or one of the
+    // opaque-body block constructs ($onEcho / $onPut /
+    // $onEmbeddedCode), whose bodies are non-GAMS text consumed by
+    // the external scanner. The $ifthen / $endif family is NOT
+    // modelled structurally — those directives are skipped via the
+    // dollar_directive entry in extras (above).
+    source_file: $ => repeat(choice(
       $.statement,
-      $.dollar_directive,
-      $.ifthen_block,
       $.onecho_block,
       $.onput_block,
       $.onembedded_block,
-    ),
+    )),
 
-    // A GAMS dollar directive: $name[.label] [args ...] through end of
-    // line, or $$name [args ...] inline. The scanner emits the
-    // keyword token without the .label suffix; the label is a
-    // separate token.immediate so #eq?/#not-eq? predicates in
-    // highlights.scm can compare the labels of paired open/close
-    // directives.
+    // A GAMS dollar directive: $name[.label] [args ...] through end
+    // of line, or $$name [args ...] inline. Args are tokenised
+    // normally — strings, macros, plain text — so highlights.scm
+    // can colour them granularly. The directive ends at the next
+    // \n (or EOF), emitted by the scanner as dollar_directive_end.
     dollar_directive: $ => seq(
       $.dollar_directive_keyword,
       optional($.directive_label),
-      $._directive_args
-    ),
-
-    // Args repeat shared by every directive form. Args are normal
-    // GAMS tokens (strings, macros, chained directive keywords) plus
-    // a low-priority directive_text catch-all for plain words —
-    // option names, label suffixes, comparison operators. Terminated
-    // by dollar_directive_end (the scanner emits this at \n or EOF
-    // when valid_symbols admits it).
-    _directive_args: $ => seq(
       repeat(choice(
         $.string,
         $.macro_ref,
@@ -84,59 +80,22 @@ module.exports = grammar({
     // keywords.
     directive_text: $ => token(prec(-2, /[^\s'"%$]+/)),
 
-    // ---- $ifthen ... [$elseIf ...]* [$else ...]? $endif ----------
-    // Strict label matching is enforced via a #not-eq? query in
-    // highlights.scm — mismatched labels render with the @invalid
-    // scope. The grammar shape itself does not enforce label equality
-    // (tree-sitter LR cannot do semantic equality at parse time);
-    // structural pairing — unclosed $ifthen, orphan $endif — IS
-    // enforced and surfaces as ERROR nodes.
-    ifthen_block: $ => seq(
-      $.ifthen_directive,
-      repeat($._top_level_item),
-      repeat($.elseif_clause),
-      optional($.else_clause),
-      $.endif_directive
-    ),
-
-    ifthen_directive: $ => seq(
-      $.ifthen_keyword,
-      optional($.directive_label),
-      $._directive_args
-    ),
-
-    elseif_clause: $ => seq(
-      $.elseif_directive,
-      repeat($._top_level_item)
-    ),
-
-    elseif_directive: $ => seq(
-      $.elseif_keyword,
-      optional($.directive_label),
-      $._directive_args
-    ),
-
-    else_clause: $ => seq(
-      $.else_directive,
-      repeat($._top_level_item)
-    ),
-
-    else_directive: $ => seq(
-      $.else_keyword,
-      optional($.directive_label),
-      $._directive_args
-    ),
-
-    endif_directive: $ => seq(
-      $.endif_keyword,
-      optional($.directive_label),
-      $._directive_args
+    // Args repeat shared by the on/off/embedded directive forms below.
+    // Same shape as dollar_directive's args body.
+    _directive_args: $ => seq(
+      repeat(choice(
+        $.string,
+        $.macro_ref,
+        $.dollar_directive_keyword,
+        $.directive_text,
+      )),
+      $.dollar_directive_end
     ),
 
     // ---- $onEcho / $offEcho ---------------------------------------
-    // Body is plain text (echoed verbatim to an external file).
-    // The scanner emits the body as one opaque echo_body token so
-    // tree-sitter's main lexer doesn't try to interpret it.
+    // Body is plain text (echoed verbatim to an external file). The
+    // scanner emits the body as one opaque echo_body token so the
+    // main lexer doesn't try to interpret it.
     onecho_block: $ => seq(
       $.onecho_directive,
       optional($.echo_body),
@@ -146,8 +105,8 @@ module.exports = grammar({
     offecho_directive: $ => seq($.offecho_keyword, $._directive_args),
 
     // ---- $onPut / $offPut -----------------------------------------
-    // Body is freeform text written to a put file via a similar
-    // mechanism to $onEcho. Same opaque-body treatment.
+    // Body is freeform text written to a put file. Same opaque-body
+    // treatment.
     onput_block: $ => seq(
       $.onput_directive,
       optional($.put_body),
@@ -157,9 +116,9 @@ module.exports = grammar({
     offput_directive: $ => seq($.offput_keyword, $._directive_args),
 
     // ---- $onEmbeddedCode <lang>: ... $offEmbeddedCode -------------
-    // The body is opaque to the GAMS parser — it's typically Python
+    // The body is opaque to the GAMS parser — typically Python
     // (or Connect, or another foreign language). The scanner emits
-    // it as a single embedded_body token; injection.scm re-parses
+    // it as a single embedded_body token; injections.scm re-parses
     // the body with a chosen sub-grammar.
     onembedded_block: $ => seq(
       $.onembedded_directive,
@@ -233,7 +192,10 @@ module.exports = grammar({
     identifier_with_domain: $ =>
       prec(3,
         seq(
-          $.identifier,
+          // The "head" before the (args) can be a plain identifier
+          // OR a name with embedded %macro% references — the parser
+          // commits to whichever fits the input.
+          choice($.identifier, $.name_with_macros),
           token.immediate('('),
           $.identifier_with_domain_args,
           ')'
@@ -356,28 +318,13 @@ module.exports = grammar({
       token.immediate(caseInsensitive('sets'))
     )),
 
+    // $-directives are extras (see top of grammar), so they can
+    // appear between any two tokens including inside the entry
+    // list of a declaration. No special handling here.
     set_declaration: $ => prec(10, seq(
       $.set_keyword,
-      commaOrNewlineSep1(choice(
-        $.set_entry,
-        $.dollar_directive,
-        $.set_decl_ifthen_block,
-      ))
-      )
-    ),
-
-    // $ifthen ... $endif blocks that conditionally include named
-    // entries inside a declaration. Six declaration types each have
-    // their own variant to keep entry-type ambiguity manageable —
-    // a `decl_ifthen_block` for set declarations only contains
-    // set_entry items, etc.
-
-    set_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.set_entry),
-    scalar_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.scalar_entry),
-    param_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.param_entry),
-    var_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.var_entry),
-    eq_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.eq_entry),
-    model_decl_ifthen_block: $ => makeDeclIfthenBlock($, $.model_entry),
+      commaOrNewlineSep1($.set_entry)
+    )),
 
     set_entry: $ => seq(
       choice(
@@ -435,11 +382,7 @@ module.exports = grammar({
     // scalar declaration
     scalar_declaration: $ => seq(
       $.scalar_keyword,
-      commaOrNewlineSep1(choice(
-        $.scalar_entry,
-        $.dollar_directive,
-        $.scalar_decl_ifthen_block,
-      ))
+      commaOrNewlineSep1($.scalar_entry)
     ),
 
     scalar_entry: $ => seq(
@@ -466,11 +409,7 @@ module.exports = grammar({
     parameter_declaration: $ =>
       seq(
         $.parameter_keyword,
-        commaOrNewlineSep1(choice(
-          $.param_entry,
-          $.dollar_directive,
-          $.param_decl_ifthen_block,
-        ))
+        commaOrNewlineSep1($.param_entry)
       ),
 
     param_entry: $ => seq(
@@ -503,11 +442,7 @@ module.exports = grammar({
     variable_declaration: $ => seq(
       optional($.var_type),
       $.variable_keyword,
-      commaOrNewlineSep1(choice(
-        $.var_entry,
-        $.dollar_directive,
-        $.var_decl_ifthen_block,
-      ))
+      commaOrNewlineSep1($.var_entry)
     ),
 
     var_entry: $ => seq(
@@ -564,11 +499,7 @@ module.exports = grammar({
 
     equation_declaration: $ => seq(
       $.equation_keyword,
-      commaOrNewlineSep1(choice(
-        $.eq_entry,
-        $.dollar_directive,
-        $.eq_decl_ifthen_block,
-      ))
+      commaOrNewlineSep1($.eq_entry)
     ),
 
     eq_entry: $ => seq(
@@ -601,7 +532,11 @@ module.exports = grammar({
     //   =n= no relation (variational)
     //   =x= external function   =c= cone (MCP)   =b= boolean
     equation_definition: $ => prec(9, seq(
-      field('name', choice($.identifier, $.identifier_with_domain)),
+      field('name', choice(
+        $.identifier_with_domain,
+        $.name_with_macros,
+        $.identifier,
+      )),
       optional(seq('$', field('condition', $.expression))),
       $.equation_definition_op,
       field('lhs', $.expression),
@@ -636,11 +571,7 @@ module.exports = grammar({
     // models declaration
 
     model_declaration: $ => seq( $.model_keyword,
-      commaOrNewlineSep1(choice(
-        $.model_entry,
-        $.dollar_directive,
-        $.model_decl_ifthen_block,
-      ))
+      commaOrNewlineSep1($.model_entry)
     ),
 
     model_keyword: $ => prec(9, choice(
@@ -658,7 +589,7 @@ module.exports = grammar({
     
     model_item: $ => choice(
       token(caseInsensitive('all')) ,
-      $.identifier,               // eqn_name
+      $.name_with_macros,          // eqn_name (may have %macro% chunks)
       $.identifier_with_domain,    // var_name(set_name)
       seq($.identifier, choice('+', '-'), $.identifier)
     ),
@@ -1017,42 +948,20 @@ module.exports = grammar({
   ],
 });
 
-// separate one or more terms by comma or newline; trailing separator
-// is allowed so a ; on its own line after the last entry parses
-// (`equations\n  eq1\n  eq2\n;` is a common multi-line idiom).
+// Separate one or more terms by an optional comma. Newlines are
+// handled as extras (whitespace) — tree-sitter's tokenizer skips
+// them between rule iterations automatically. Allowing `,` to be
+// optional lets `equations eq1 eq2 eq3;` (no separators) AND
+// `equations eq1, eq2;` AND the multi-line newline-separated form
+// all parse the same way.
 function commaOrNewlineSep1(rule) {
   return seq(
     rule,
-    repeat(seq(choice(',', /\r?\n/), rule)),
-    optional(choice(',', /\r?\n/))
+    repeat(seq(optional(','), rule)),
+    optional(',')
   );
 }
 
-// Build an $ifthen ... $endif block whose body is a sequence of the
-// given entry rule (set_entry / param_entry / etc.). Used so each
-// declaration kind can reuse the same conditional-include shape
-// without entry types overlapping in a single combined rule.
-function makeDeclIfthenBlock($, entryRule) {
-  const inner = choice(
-    entryRule,
-    $.dollar_directive,
-    // self-reference: nested $ifthen inside the current decl context
-    // is admitted via the surrounding declaration's commaOrNewlineSep1.
-  );
-  return seq(
-    $.ifthen_directive,
-    repeat(inner),
-    repeat(seq(
-      $.elseif_directive,
-      repeat(inner)
-    )),
-    optional(seq(
-      $.else_directive,
-      repeat(inner)
-    )),
-    $.endif_directive
-  );
-}
 
 function newlineSep1(rule) {
   return seq(rule, 
