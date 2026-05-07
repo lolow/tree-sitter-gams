@@ -583,9 +583,14 @@ module.exports = grammar({
       commaOrNewlineSep1($.model_entry)
     ),
 
+    // Lexer prec(3) is set inside token.immediate so 'model' /
+    // 'models' wins the lex-time competition against the binary
+    // built-in 'mod' (lexer prec 2). Without this the case-insensitive
+    // 'MOD' regex would shadow the 5-char 'MODEL' match. Outer prec(9)
+    // remains the parser-level precedence.
     model_keyword: $ => prec(9, choice(
-      token.immediate(caseInsensitive('model')),
-      token.immediate(caseInsensitive('models'))
+      token.immediate(prec(3, caseInsensitive('model'))),
+      token.immediate(prec(3, caseInsensitive('models')))
     )),
 
     model_entry: $ => seq(
@@ -607,9 +612,13 @@ module.exports = grammar({
 
     solve_keyword: $ => token.immediate(caseInsensitive('solve')),
 
+    // Lexer prec(3) so 'maximizing' / 'minimizing' wins against the
+    // multi-arg built-ins 'max' / 'min' (lexer prec 2) — without
+    // this the case-insensitive 'MAX' / 'MIN' regex would shadow the
+    // 10-char 'MAXIMIZING' / 'MINIMIZING' match.
     solve_direction: $ => choice(
-      token.immediate(caseInsensitive('maximizing')),
-      token.immediate(caseInsensitive('minimizing'))
+      token.immediate(prec(3, caseInsensitive('maximizing'))),
+      token.immediate(prec(3, caseInsensitive('minimizing')))
     ),
 
     solve_statement: $ => prec(9,
@@ -899,10 +908,8 @@ module.exports = grammar({
       // 'mod' also appears in binary_operator_keyword (the `a mod b`
       // infix form). Both rules accept the same token; the parser
       // disambiguates from context — `a mod b` parses as the operator,
-      // `mod(a, b)` parses as the function call. Lowercase-only here
-      // for the same reason as max / min: 'MOD' would otherwise
-      // shadow 'MODEL' / 'MODELS' in declarations.
-      'mod',
+      // `mod(a, b)` parses as the function call.
+      token(prec(2, caseInsensitive('mod'))),
       token(prec(2, caseInsensitive('normal'))),
       token(prec(2, caseInsensitive('power'))),
       token(prec(2, caseInsensitive('randBinomial'))),
@@ -947,14 +954,8 @@ module.exports = grammar({
       token(prec(2, caseInsensitive('lseMaxSc'))),
       token(prec(2, caseInsensitive('lseMin'))),
       token(prec(2, caseInsensitive('lseMinSc'))),
-      // max / min are kept as lowercase string literals (rather than
-      // caseInsensitive) so tree-sitter auto-extracts them as
-      // keywords with word-boundary semantics. The uppercase forms
-      // 'MAX' / 'MIN' would otherwise shadow 'MAXIMIZING' / 'MINIMIZING'
-      // in solve_direction (the `maximizing z` clause of a solve
-      // statement). Lowercase max(1,2) / min(1,2) parses correctly.
-      'max',
-      'min',
+      token(prec(2, caseInsensitive('max'))),
+      token(prec(2, caseInsensitive('min'))),
       token(prec(2, caseInsensitive('ncpCM'))),
       token(prec(2, caseInsensitive('ncpF'))),
       token(prec(2, caseInsensitive('ncpVUpow'))),

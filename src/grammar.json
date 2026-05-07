@@ -2489,15 +2489,23 @@
           {
             "type": "IMMEDIATE_TOKEN",
             "content": {
-              "type": "PATTERN",
-              "value": "[mM][oO][dD][eE][lL]"
+              "type": "PREC",
+              "value": 3,
+              "content": {
+                "type": "PATTERN",
+                "value": "[mM][oO][dD][eE][lL]"
+              }
             }
           },
           {
             "type": "IMMEDIATE_TOKEN",
             "content": {
-              "type": "PATTERN",
-              "value": "[mM][oO][dD][eE][lL][sS]"
+              "type": "PREC",
+              "value": 3,
+              "content": {
+                "type": "PATTERN",
+                "value": "[mM][oO][dD][eE][lL][sS]"
+              }
             }
           }
         ]
@@ -2653,15 +2661,23 @@
         {
           "type": "IMMEDIATE_TOKEN",
           "content": {
-            "type": "PATTERN",
-            "value": "[mM][aA][xX][iI][mM][iI][zZ][iI][nN][gG]"
+            "type": "PREC",
+            "value": 3,
+            "content": {
+              "type": "PATTERN",
+              "value": "[mM][aA][xX][iI][mM][iI][zZ][iI][nN][gG]"
+            }
           }
         },
         {
           "type": "IMMEDIATE_TOKEN",
           "content": {
-            "type": "PATTERN",
-            "value": "[mM][iI][nN][iI][mM][iI][zZ][iI][nN][gG]"
+            "type": "PREC",
+            "value": 3,
+            "content": {
+              "type": "PATTERN",
+              "value": "[mM][iI][nN][iI][mM][iI][zZ][iI][nN][gG]"
+            }
           }
         }
       ]
@@ -4367,8 +4383,15 @@
           }
         },
         {
-          "type": "STRING",
-          "value": "mod"
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "PATTERN",
+              "value": "[mM][oO][dD]"
+            }
+          }
         },
         {
           "type": "TOKEN",
@@ -4684,12 +4707,26 @@
           }
         },
         {
-          "type": "STRING",
-          "value": "max"
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "PATTERN",
+              "value": "[mM][aA][xX]"
+            }
+          }
         },
         {
-          "type": "STRING",
-          "value": "min"
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 2,
+            "content": {
+              "type": "PATTERN",
+              "value": "[mM][iI][nN]"
+            }
+          }
         },
         {
           "type": "TOKEN",
