@@ -3229,8 +3229,8 @@
                 "value": "-"
               },
               {
-                "type": "PATTERN",
-                "value": "[nN][oO][tT]"
+                "type": "STRING",
+                "value": "not"
               }
             ]
           },

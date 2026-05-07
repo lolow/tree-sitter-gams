@@ -710,7 +710,13 @@ module.exports = grammar({
 
     paren_expr: $ => seq('(', $.expression, ')'),
 
-    unary_expr: $ => prec(100, seq(choice('+', '-', caseInsensitive('not')), $.expression)),
+    // 'not' is a lowercase string literal (rather than a
+    // caseInsensitive regex) so tree-sitter auto-extracts it as a
+    // keyword and so highlights.scm can capture it via an anonymous
+    // node, the same way it captures '+' and '-'. Lowercase-only
+    // matches mirror the convention used by the built-in function
+    // catalog elsewhere in this grammar.
+    unary_expr: $ => prec(100, seq(choice('+', '-', 'not'), $.expression)),
 
     binary_operator_keyword : $ => choice(
       token('+'), token('-'), token('*'), token('/'), token('**'),
