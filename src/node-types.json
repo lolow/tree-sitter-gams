@@ -1878,15 +1878,24 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
           "type": "expression",
           "named": true
+        },
+        {
+          "type": "unary_operator_keyword",
+          "named": true
         }
       ]
     }
+  },
+  {
+    "type": "unary_operator_keyword",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "var_attr_assignment",
@@ -2075,48 +2084,8 @@
     "named": false
   },
   {
-    "type": "abs",
-    "named": false
-  },
-  {
-    "type": "acos",
-    "named": false
-  },
-  {
-    "type": "arccos",
-    "named": false
-  },
-  {
-    "type": "arcsin",
-    "named": false
-  },
-  {
-    "type": "arctan",
-    "named": false
-  },
-  {
-    "type": "arctan2",
-    "named": false
-  },
-  {
-    "type": "asin",
-    "named": false
-  },
-  {
     "type": "bare_identifier",
     "named": true
-  },
-  {
-    "type": "beta",
-    "named": false
-  },
-  {
-    "type": "betareg",
-    "named": false
-  },
-  {
-    "type": "binomial",
-    "named": false
   },
   {
     "type": "block_comment_c",
@@ -2133,58 +2102,6 @@
     "named": true
   },
   {
-    "type": "bool_and",
-    "named": false
-  },
-  {
-    "type": "bool_eqv",
-    "named": false
-  },
-  {
-    "type": "bool_imp",
-    "named": false
-  },
-  {
-    "type": "bool_not",
-    "named": false
-  },
-  {
-    "type": "bool_or",
-    "named": false
-  },
-  {
-    "type": "bool_xor",
-    "named": false
-  },
-  {
-    "type": "card",
-    "named": false
-  },
-  {
-    "type": "ceil",
-    "named": false
-  },
-  {
-    "type": "centropy",
-    "named": false
-  },
-  {
-    "type": "cos",
-    "named": false
-  },
-  {
-    "type": "cosh",
-    "named": false
-  },
-  {
-    "type": "cvpower",
-    "named": false
-  },
-  {
-    "type": "diag",
-    "named": false
-  },
-  {
     "type": "directive_label",
     "named": true
   },
@@ -2195,14 +2112,6 @@
   {
     "type": "display_keyword",
     "named": true
-  },
-  {
-    "type": "div",
-    "named": false
-  },
-  {
-    "type": "div0",
-    "named": false
   },
   {
     "type": "dollar_directive_end",
@@ -2217,10 +2126,6 @@
     "named": true
   },
   {
-    "type": "edist",
-    "named": false
-  },
-  {
     "type": "else",
     "named": false
   },
@@ -2233,96 +2138,12 @@
     "named": true
   },
   {
-    "type": "entropy",
-    "named": false
-  },
-  {
     "type": "equation_definition_op",
     "named": true
   },
   {
     "type": "equation_relational_op",
     "named": true
-  },
-  {
-    "type": "errorf",
-    "named": false
-  },
-  {
-    "type": "exp",
-    "named": false
-  },
-  {
-    "type": "fact",
-    "named": false
-  },
-  {
-    "type": "floor",
-    "named": false
-  },
-  {
-    "type": "frac",
-    "named": false
-  },
-  {
-    "type": "gamma",
-    "named": false
-  },
-  {
-    "type": "gammareg",
-    "named": false
-  },
-  {
-    "type": "gday",
-    "named": false
-  },
-  {
-    "type": "gdow",
-    "named": false
-  },
-  {
-    "type": "ghour",
-    "named": false
-  },
-  {
-    "type": "gleap",
-    "named": false
-  },
-  {
-    "type": "gmillisec",
-    "named": false
-  },
-  {
-    "type": "gminute",
-    "named": false
-  },
-  {
-    "type": "gmonth",
-    "named": false
-  },
-  {
-    "type": "gsecond",
-    "named": false
-  },
-  {
-    "type": "gyear",
-    "named": false
-  },
-  {
-    "type": "handlecollect",
-    "named": false
-  },
-  {
-    "type": "handledelete",
-    "named": false
-  },
-  {
-    "type": "handlestatus",
-    "named": false
-  },
-  {
-    "type": "handlesubmit",
-    "named": false
   },
   {
     "type": "identifier",
@@ -2333,85 +2154,17 @@
     "named": false
   },
   {
-    "type": "ifthen",
-    "named": false
-  },
-  {
-    "type": "jdate",
-    "named": false
-  },
-  {
-    "type": "jobkill",
-    "named": false
-  },
-  {
-    "type": "jobstatus",
-    "named": false
-  },
-  {
-    "type": "jobterminate",
-    "named": false
-  },
-  {
-    "type": "jtime",
-    "named": false
-  },
-  {
     "type": "line_comment",
     "named": true,
     "extra": true
-  },
-  {
-    "type": "log",
-    "named": false
-  },
-  {
-    "type": "log10",
-    "named": false
-  },
-  {
-    "type": "log2",
-    "named": false
-  },
-  {
-    "type": "logbeta",
-    "named": false
-  },
-  {
-    "type": "loggamma",
-    "named": false
-  },
-  {
-    "type": "logit",
-    "named": false
   },
   {
     "type": "loop_keyword",
     "named": true
   },
   {
-    "type": "lsemax",
-    "named": false
-  },
-  {
-    "type": "lsemaxsc",
-    "named": false
-  },
-  {
-    "type": "lsemin",
-    "named": false
-  },
-  {
-    "type": "lseminsc",
-    "named": false
-  },
-  {
     "type": "macro_ref",
     "named": true
-  },
-  {
-    "type": "mapval",
-    "named": false
   },
   {
     "type": "max",
@@ -2428,26 +2181,6 @@
   {
     "type": "model_type",
     "named": true
-  },
-  {
-    "type": "ncpcm",
-    "named": false
-  },
-  {
-    "type": "ncpf",
-    "named": false
-  },
-  {
-    "type": "ncpvupow",
-    "named": false
-  },
-  {
-    "type": "ncpvusin",
-    "named": false
-  },
-  {
-    "type": "normal",
-    "named": false
   },
   {
     "type": "number",
@@ -2478,187 +2211,15 @@
     "named": true
   },
   {
-    "type": "ord",
-    "named": false
-  },
-  {
-    "type": "poly",
-    "named": false
-  },
-  {
-    "type": "power",
-    "named": false
-  },
-  {
-    "type": "prod",
-    "named": false
-  },
-  {
     "type": "put_body",
     "named": true
-  },
-  {
-    "type": "randbinomial",
-    "named": false
-  },
-  {
-    "type": "randlinear",
-    "named": false
-  },
-  {
-    "type": "randtriangle",
-    "named": false
-  },
-  {
-    "type": "readycollect",
-    "named": false
-  },
-  {
-    "type": "rel_eq",
-    "named": false
-  },
-  {
-    "type": "rel_ge",
-    "named": false
-  },
-  {
-    "type": "rel_gt",
-    "named": false
-  },
-  {
-    "type": "rel_le",
-    "named": false
-  },
-  {
-    "type": "rel_lt",
-    "named": false
-  },
-  {
-    "type": "rel_ne",
-    "named": false
-  },
-  {
-    "type": "round",
-    "named": false
-  },
-  {
-    "type": "rpower",
-    "named": false
-  },
-  {
-    "type": "sameas",
-    "named": false
-  },
-  {
-    "type": "sand",
-    "named": false
   },
   {
     "type": "set_element",
     "named": true
   },
   {
-    "type": "sigmoid",
-    "named": false
-  },
-  {
-    "type": "sign",
-    "named": false
-  },
-  {
-    "type": "signpower",
-    "named": false
-  },
-  {
-    "type": "sin",
-    "named": false
-  },
-  {
-    "type": "sinh",
-    "named": false
-  },
-  {
-    "type": "sleep",
-    "named": false
-  },
-  {
-    "type": "slexp",
-    "named": false
-  },
-  {
-    "type": "sllog10",
-    "named": false
-  },
-  {
-    "type": "slrec",
-    "named": false
-  },
-  {
-    "type": "smax",
-    "named": false
-  },
-  {
-    "type": "smin",
-    "named": false
-  },
-  {
     "type": "solve_keyword",
     "named": true
-  },
-  {
-    "type": "sor",
-    "named": false
-  },
-  {
-    "type": "sqexp",
-    "named": false
-  },
-  {
-    "type": "sqlog10",
-    "named": false
-  },
-  {
-    "type": "sqr",
-    "named": false
-  },
-  {
-    "type": "sqrec",
-    "named": false
-  },
-  {
-    "type": "sqrt",
-    "named": false
-  },
-  {
-    "type": "sum",
-    "named": false
-  },
-  {
-    "type": "tan",
-    "named": false
-  },
-  {
-    "type": "tanh",
-    "named": false
-  },
-  {
-    "type": "trunc",
-    "named": false
-  },
-  {
-    "type": "uniform",
-    "named": false
-  },
-  {
-    "type": "uniformint",
-    "named": false
-  },
-  {
-    "type": "val",
-    "named": false
-  },
-  {
-    "type": "vcpower",
-    "named": false
   }
 ]

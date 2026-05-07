@@ -716,7 +716,18 @@ module.exports = grammar({
     // node, the same way it captures '+' and '-'. Lowercase-only
     // matches mirror the convention used by the built-in function
     // catalog elsewhere in this grammar.
-    unary_expr: $ => prec(100, seq(choice('+', '-', 'not'), $.expression)),
+    unary_expr: $ => prec(100, seq($.unary_operator_keyword, $.expression)),
+
+    // Named rule mirrors binary_operator_keyword so highlights.scm
+    // can capture the operator with `(unary_operator_keyword) @operator`.
+    // 'not' uses caseInsensitive (with prec(2) lex priority) so 'NOT' /
+    // 'Not' / 'nOt' all match, consistent with the rest of the keyword
+    // catalog.
+    unary_operator_keyword: $ => choice(
+      token('+'),
+      token('-'),
+      token(prec(2, caseInsensitive('not')))
+    ),
 
     binary_operator_keyword : $ => choice(
       token('+'), token('-'), token('*'), token('/'), token('**'),
@@ -734,8 +745,12 @@ module.exports = grammar({
     )),
 
     indexed_operation_keyword: $ => choice(
-      'sum', 'prod', 'smin', 
-      'smax', 'sand', 'sor'
+      token(prec(2, caseInsensitive('sum'))),
+      token(prec(2, caseInsensitive('prod'))),
+      token(prec(2, caseInsensitive('smin'))),
+      token(prec(2, caseInsensitive('smax'))),
+      token(prec(2, caseInsensitive('sand'))),
+      token(prec(2, caseInsensitive('sor')))
     ),
 
     indexed_operation: $ => seq(
@@ -788,18 +803,72 @@ module.exports = grammar({
     // overwhelmingly lowercase; uppercase users can map their style
     // through GAMS itself, which is case-insensitive at the
     // language level.
-    unary_builtin_function_keyword: $ => prec(5, choice(
-      'abs', 'arccos', 'arcsin', 'arctan', 'asin', 'acos',
-      'bool_not', 'card', 'ceil', 'cos', 'cosh',
-      'entropy', 'errorf', 'exp', 'fact', 'floor', 'frac', 'gamma',
-      'gday', 'gdow', 'ghour', 'gleap', 'gmillisec', 'gminute',
-      'gmonth', 'gsecond', 'gyear',
-      'handlecollect', 'handledelete', 'handlestatus', 'handlesubmit',
-      'jobkill', 'jobstatus', 'jobterminate',
-      'log10', 'log2', 'log', 'loggamma', 'logit', 'mapval', 'ord',
-      'sigmoid', 'sign', 'sin', 'sinh', 'sleep', 'sqr', 'sqrt',
-      'tan', 'tanh', 'trunc', 'val'
-    )),
+    // Each name is wrapped as token(prec(2, caseInsensitive('name'))).
+    //   - caseInsensitive: matches any case variant (abs / ABS / Abs).
+    //   - prec(2): breaks the lex-level tie with identifier (prec 0)
+    //     so e.g. `abs(...)` lexes as the keyword instead of an
+    //     identifier inside an indexed_reference. tree-sitter does
+    //     not auto-extract caseInsensitive regex tokens as keywords,
+    //     so the explicit prec is required for the keyword to win
+    //     when both the keyword and identifier rules match the same
+    //     length. Word-boundary safety is preserved because each
+    //     token is a single complete word — the regex engine matches
+    //     the full alternative or fails — so `mod` does not partially
+    //     match `model` (longer-match-wins still applies).
+    unary_builtin_function_keyword: $ => choice(
+      token(prec(2, caseInsensitive('abs'))),
+      token(prec(2, caseInsensitive('arccos'))),
+      token(prec(2, caseInsensitive('arcsin'))),
+      token(prec(2, caseInsensitive('arctan'))),
+      token(prec(2, caseInsensitive('asin'))),
+      token(prec(2, caseInsensitive('acos'))),
+      token(prec(2, caseInsensitive('bool_not'))),
+      token(prec(2, caseInsensitive('card'))),
+      token(prec(2, caseInsensitive('ceil'))),
+      token(prec(2, caseInsensitive('cos'))),
+      token(prec(2, caseInsensitive('cosh'))),
+      token(prec(2, caseInsensitive('entropy'))),
+      token(prec(2, caseInsensitive('errorf'))),
+      token(prec(2, caseInsensitive('exp'))),
+      token(prec(2, caseInsensitive('fact'))),
+      token(prec(2, caseInsensitive('floor'))),
+      token(prec(2, caseInsensitive('frac'))),
+      token(prec(2, caseInsensitive('gamma'))),
+      token(prec(2, caseInsensitive('gday'))),
+      token(prec(2, caseInsensitive('gdow'))),
+      token(prec(2, caseInsensitive('ghour'))),
+      token(prec(2, caseInsensitive('gleap'))),
+      token(prec(2, caseInsensitive('gmillisec'))),
+      token(prec(2, caseInsensitive('gminute'))),
+      token(prec(2, caseInsensitive('gmonth'))),
+      token(prec(2, caseInsensitive('gsecond'))),
+      token(prec(2, caseInsensitive('gyear'))),
+      token(prec(2, caseInsensitive('handleCollect'))),
+      token(prec(2, caseInsensitive('handleDelete'))),
+      token(prec(2, caseInsensitive('handleStatus'))),
+      token(prec(2, caseInsensitive('handleSubmit'))),
+      token(prec(2, caseInsensitive('jobKill'))),
+      token(prec(2, caseInsensitive('jobStatus'))),
+      token(prec(2, caseInsensitive('jobTerminate'))),
+      token(prec(2, caseInsensitive('log10'))),
+      token(prec(2, caseInsensitive('log2'))),
+      token(prec(2, caseInsensitive('log'))),
+      token(prec(2, caseInsensitive('logGamma'))),
+      token(prec(2, caseInsensitive('logit'))),
+      token(prec(2, caseInsensitive('mapVal'))),
+      token(prec(2, caseInsensitive('ord'))),
+      token(prec(2, caseInsensitive('sigmoid'))),
+      token(prec(2, caseInsensitive('sign'))),
+      token(prec(2, caseInsensitive('sin'))),
+      token(prec(2, caseInsensitive('sinh'))),
+      token(prec(2, caseInsensitive('sleep'))),
+      token(prec(2, caseInsensitive('sqr'))),
+      token(prec(2, caseInsensitive('sqrt'))),
+      token(prec(2, caseInsensitive('tan'))),
+      token(prec(2, caseInsensitive('tanh'))),
+      token(prec(2, caseInsensitive('trunc'))),
+      token(prec(2, caseInsensitive('val')))
+    ),
 
     unary_builtin_function_expr: $ =>
       prec(5,
@@ -812,14 +881,44 @@ module.exports = grammar({
       ),
 
 
-    binary_builtin_function_keyword: $ => prec(4, choice(
-      'arctan2', 'beta', 'binomial',
-      'bool_and', 'bool_eqv', 'bool_imp', 'bool_or', 'bool_xor',
-      'cvpower', 'diag', 'div0', 'div',
-      'gammareg', 'logbeta', 'mod', 'normal', 'power', 'randbinomial',
-      'rel_eq', 'rel_ge', 'rel_gt', 'rel_le', 'rel_lt', 'rel_ne',
-      'rpower', 'sameas', 'signpower', 'uniform', 'uniformint', 'vcpower'
-    )),
+    binary_builtin_function_keyword: $ => choice(
+      token(prec(2, caseInsensitive('arctan2'))),
+      token(prec(2, caseInsensitive('beta'))),
+      token(prec(2, caseInsensitive('binomial'))),
+      token(prec(2, caseInsensitive('bool_and'))),
+      token(prec(2, caseInsensitive('bool_eqv'))),
+      token(prec(2, caseInsensitive('bool_imp'))),
+      token(prec(2, caseInsensitive('bool_or'))),
+      token(prec(2, caseInsensitive('bool_xor'))),
+      token(prec(2, caseInsensitive('cvPower'))),
+      token(prec(2, caseInsensitive('diag'))),
+      token(prec(2, caseInsensitive('div0'))),
+      token(prec(2, caseInsensitive('div'))),
+      token(prec(2, caseInsensitive('gammaReg'))),
+      token(prec(2, caseInsensitive('logBeta'))),
+      // 'mod' also appears in binary_operator_keyword (the `a mod b`
+      // infix form). Both rules accept the same token; the parser
+      // disambiguates from context — `a mod b` parses as the operator,
+      // `mod(a, b)` parses as the function call. Lowercase-only here
+      // for the same reason as max / min: 'MOD' would otherwise
+      // shadow 'MODEL' / 'MODELS' in declarations.
+      'mod',
+      token(prec(2, caseInsensitive('normal'))),
+      token(prec(2, caseInsensitive('power'))),
+      token(prec(2, caseInsensitive('randBinomial'))),
+      token(prec(2, caseInsensitive('rel_eq'))),
+      token(prec(2, caseInsensitive('rel_ge'))),
+      token(prec(2, caseInsensitive('rel_gt'))),
+      token(prec(2, caseInsensitive('rel_le'))),
+      token(prec(2, caseInsensitive('rel_lt'))),
+      token(prec(2, caseInsensitive('rel_ne'))),
+      token(prec(2, caseInsensitive('rPower'))),
+      token(prec(2, caseInsensitive('sameAs'))),
+      token(prec(2, caseInsensitive('signPower'))),
+      token(prec(2, caseInsensitive('uniform'))),
+      token(prec(2, caseInsensitive('uniformInt'))),
+      token(prec(2, caseInsensitive('vcPower')))
+    ),
 
     binary_builtin_function_expr: $ =>
       prec(4,
@@ -837,15 +936,41 @@ module.exports = grammar({
     // The expr rule below admits any number of comma-separated
     // arguments >= 1, so the precise per-function arity is not
     // enforced at parse time — that's a semantic check.
-    multi_args_builtin_function_keyword: $ => prec(3, choice(
-      'betareg', 'centropy', 'edist',
-      'ifthen', 'jdate', 'jtime',
-      'lsemax', 'lsemaxsc', 'lsemin', 'lseminsc',
-      'max', 'min',
-      'ncpcm', 'ncpf', 'ncpvupow', 'ncpvusin',
-      'poly', 'randlinear', 'randtriangle', 'readycollect', 'round',
-      'slexp', 'sllog10', 'slrec', 'sqexp', 'sqlog10', 'sqrec'
-    )),
+    multi_args_builtin_function_keyword: $ => choice(
+      token(prec(2, caseInsensitive('betaReg'))),
+      token(prec(2, caseInsensitive('centropy'))),
+      token(prec(2, caseInsensitive('eDist'))),
+      token(prec(2, caseInsensitive('ifThen'))),
+      token(prec(2, caseInsensitive('jdate'))),
+      token(prec(2, caseInsensitive('jtime'))),
+      token(prec(2, caseInsensitive('lseMax'))),
+      token(prec(2, caseInsensitive('lseMaxSc'))),
+      token(prec(2, caseInsensitive('lseMin'))),
+      token(prec(2, caseInsensitive('lseMinSc'))),
+      // max / min are kept as lowercase string literals (rather than
+      // caseInsensitive) so tree-sitter auto-extracts them as
+      // keywords with word-boundary semantics. The uppercase forms
+      // 'MAX' / 'MIN' would otherwise shadow 'MAXIMIZING' / 'MINIMIZING'
+      // in solve_direction (the `maximizing z` clause of a solve
+      // statement). Lowercase max(1,2) / min(1,2) parses correctly.
+      'max',
+      'min',
+      token(prec(2, caseInsensitive('ncpCM'))),
+      token(prec(2, caseInsensitive('ncpF'))),
+      token(prec(2, caseInsensitive('ncpVUpow'))),
+      token(prec(2, caseInsensitive('ncpVUsin'))),
+      token(prec(2, caseInsensitive('poly'))),
+      token(prec(2, caseInsensitive('randLinear'))),
+      token(prec(2, caseInsensitive('randTriangle'))),
+      token(prec(2, caseInsensitive('readyCollect'))),
+      token(prec(2, caseInsensitive('round'))),
+      token(prec(2, caseInsensitive('slexp'))),
+      token(prec(2, caseInsensitive('sllog10'))),
+      token(prec(2, caseInsensitive('slrec'))),
+      token(prec(2, caseInsensitive('sqexp'))),
+      token(prec(2, caseInsensitive('sqlog10'))),
+      token(prec(2, caseInsensitive('sqrec')))
+    ),
 
     multi_args_builtin_function_expr: $ =>
       prec(3,
